@@ -19,6 +19,10 @@ class Fetcher {
 		return 'api';
 	}
 
+	static get apiPath() {
+		return path.join(process.cwd(), this.folder);
+	}
+
 	constructor(endpoint, method) {
 		this.endpoint = endpoint;
 		this.method = method.toLocaleLowerCase();
@@ -42,19 +46,17 @@ class Fetcher {
 			APIController = require(filePath);
 			/* eslint-enable */
 
-		} catch(e) {
+		} catch(err) {
 
-			if(e instanceof ReferenceError || e instanceof TypeError || e instanceof SyntaxError || e instanceof RangeError)
-				logger.error('Module', e);
-
-			if(e.code !== 'MODULE_NOT_FOUND' || !(~e.message.indexOf(filePath)))
-				logger.error('Module', e);
+			if(err instanceof ReferenceError || err instanceof TypeError || err instanceof SyntaxError || err instanceof RangeError
+				|| err.code !== 'MODULE_NOT_FOUND' || !(~err.message.indexOf(filePath)))
+				logger.error('Module', err);
 
 			APIController = false;
 		}
 
 		if(!APIController)
-			throw new APIError(`Invalid API Controller '${filePath}'`, APIError.codes.API_FILE_NOT_FOUND);
+			throw new APIError(`Invalid API Controller '${filePath}'`, APIError.codes.API_NOT_FOUND);
 
 		const controller = new APIController();
 
@@ -83,7 +85,7 @@ class Fetcher {
 			join('/')
 		)(urlParts);
 
-		return path.join(process.cwd(), this.constructor.folder, filePath, method);
+		return path.join(this.constructor.apiPath, filePath, method);
 	}
 
 	/**

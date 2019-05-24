@@ -1,7 +1,7 @@
 {
 	"exclude": [
-		".eslintrc.js",
-		"debug.js"
+		"tests/",
+		".eslintrc.js"
 	],
 	"cache": true,
 	"all": true,

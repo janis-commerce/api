@@ -70,7 +70,7 @@ class API {
 
 			// If controller & process exists, execute method
 			if(!apiController.process)
-				throw new APIError('Method \'process\' not found', APIError.codes.METHOD_PROCESS_NOT_FOUND);
+				throw new APIError('Method \'process\' not found', APIError.codes.PROCESS_METHOD_NOT_FOUND);
 
 		} catch(err) {
 
