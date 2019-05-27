@@ -12,11 +12,47 @@ const { APIError, Fetcher } = require('./../api');
 
 describe('API', function() {
 
+	const mock = (endpoint, classContent) => {
+		mockRequire(path.join(Fetcher.apiPath, endpoint), classContent);
+	};
+
 	before(() => {
-		mockRequire(path.join(Fetcher.apiPath, 'no-process-endpoint/list'), class {});
-		mockRequire(path.join(Fetcher.apiPath, 'process-throws-endpoint/post'), class {
-			process() {
+		mock('no-process-endpoint/list', class {});
+		mock('process-throws-endpoint/post', class {
+			async process() {
 				throw new Error('some internal error');
+			}
+		});
+		mock('validate-throws-endpoint/put', class {
+			async validate() {
+				throw new Error('some data invalid');
+			}
+
+			async process() {
+				return 1;
+			}
+		});
+		mock('struct-endpoint/list', class {
+			get struct() {
+				return [{ foo: 'string' }];
+			}
+
+			async process() {
+				return 1;
+			}
+		});
+		mock('validate-correctly-endpoint/list', class {
+			async validate() {
+				return true;
+			}
+
+			async process() {
+				return 1;
+			}
+		});
+		mock('valid-endpoint/list', class {
+			async process() {
+				return 1;
 			}
 		});
 	});
@@ -87,7 +123,6 @@ describe('API', function() {
 				['foo', 'bar']
 			].forEach(cookies => testConstructorReject(APIError.codes.INVALID_COOKIES, { endpoint, cookies }));
 		});
-
 	});
 
 	describe('should return code 500', function() {
@@ -115,15 +150,55 @@ describe('API', function() {
 				method: 'post'
 			}));
 		});
-
 	});
 
 	describe('should return code 400', function() {
-		// TODO
+
+		const test = async myApi => {
+			const result = await myApi.dispatch();
+			assert.deepEqual(result.code, 400);
+		};
+
+		it('when api validate method throw a data invalid error', async function() {
+			await test(new API({
+				endpoint: 'api/validate-throws-endpoint',
+				method: 'put'
+			}));
+		});
+
+		it('when api data is invlaid against struct', async function() {
+			await test(new API({
+				endpoint: 'api/struct-endpoint'
+			}));
+		});
+
 	});
 
 	describe('should return code 200', function() {
-		// TODO
+
+		const test = async myApi => {
+			const result = await myApi.dispatch();
+			assert.deepEqual(result.code, 200);
+		};
+
+		it('when api validates correctly', async function() {
+			await test(new API({
+				endpoint: 'api/validate-correctly-endpoint'
+			}));
+		});
+
+		it('when api validates correctly the struct', async function() {
+			await test(new API({
+				endpoint: 'api/struct-endpoint',
+				data: { foo: 'bar' }
+			}));
+		});
+
+		it('when api has no validate method', async function() {
+			await test(new API({
+				endpoint: 'api/valid-endpoint'
+			}));
+		});
 	});
 
 });
