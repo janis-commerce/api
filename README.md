@@ -25,7 +25,7 @@ Returns an object with `code` and the `result`.
 const API = require('@janiscommerce/api');
 
 const myApi = new API({
-	endpoint: 'api/peths',
+	endpoint: 'api/pets',
 	method: 'get', // this is the default verb
 	data: { status: 'active' },
 	headers: { 'Content-Type': 'application/json' },
