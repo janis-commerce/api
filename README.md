@@ -1,4 +1,6 @@
-# Server
+# API
+
+[![Build Status](https://travis-ci.org/janis-commerce/api.svg?branch=master)](https://travis-ci.org/janis-commerce/api)
 
 A package for managing API from any origin.
 
