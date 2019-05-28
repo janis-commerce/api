@@ -1,6 +1,7 @@
 # API
 
 [![Build Status](https://travis-ci.org/janis-commerce/api.svg?branch=master)](https://travis-ci.org/janis-commerce/api)
+[![Coverage Status](https://coveralls.io/repos/github/janis-commerce/api/badge.svg?branch=master)](https://coveralls.io/github/janis-commerce/api?branch=master)
 
 A package for managing API from any origin.
 
