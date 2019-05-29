@@ -58,9 +58,15 @@ class Fetcher {
 		if(!APIController)
 			throw new APIError(`Invalid API Controller '${filePath}'`, APIError.codes.API_NOT_FOUND);
 
-		const controller = new APIController();
+		let apiController;
 
-		return controller;
+		try {
+			apiController = new APIController();
+		} catch(err) {
+			throw new APIError(`API Controller '${filePath}' is not a api class`, APIError.codes.INVALID_API);
+		}
+
+		return apiController;
 	}
 
 	/**

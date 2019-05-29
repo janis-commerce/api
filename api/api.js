@@ -73,11 +73,9 @@ class API {
 				throw new APIError('Method \'process\' not found', APIError.codes.PROCESS_METHOD_NOT_FOUND);
 
 		} catch(err) {
-
-			// devuelve un 500
 			return {
-				code: 500,
-				message: err.message || 'internal server error'
+				code: 500, // returns a 500 http code
+				message: err.message
 			};
 		}
 
@@ -93,13 +91,10 @@ class API {
 				await apiController.validate(this.data, ...pathParams);
 
 		} catch(err) {
-
-			// devuelve un 400
 			return {
-				code: 400,
+				code: 400, // returns a 400 http code
 				message: err.message || 'data invalid'
 			};
-
 		}
 
 		let result;
@@ -110,16 +105,14 @@ class API {
 			result = await apiController.process(this.data, ...pathParams);
 
 		} catch(err) {
-
 			return {
-				code: 500,
+				code: 500, // returns a 500 http code
 				message: err.message || 'internal server error'
 			};
-
 		}
 
 		return {
-			code: 200,
+			code: 200, // returns a 200 http code
 			body: result
 		};
 	}

@@ -12,54 +12,79 @@ const { APIError, Fetcher } = require('./../api');
 
 describe('API', function() {
 
+	class ValidProcessClass {
+		async process() {
+			return 1;
+		}
+	}
+
+	class ValidateOkClass extends ValidProcessClass {
+		async validate() {
+			return true;
+		}
+	}
+
+	class ValidateRejectsDefaultClass extends ValidProcessClass {
+		async validate() {
+			throw new Error();
+		}
+	}
+
+	class ValidateRejectsClass extends ValidProcessClass {
+		async validate() {
+			throw new Error('some data invalid');
+		}
+	}
+
+	class StructClass extends ValidProcessClass {
+		get struct() {
+			return { foo: 'string' };
+		}
+	}
+
+	class StructMultipleClass extends ValidProcessClass {
+		get struct() {
+			return [{ foo: 'string', bar: 'number' }];
+		}
+	}
+
+	class ProcessRejectsClass {
+		async process() {
+			throw new Error('some internal error');
+		}
+	}
+
+	class ProcessRejectsDefaultClass {
+		async process() {
+			throw new Error();
+		}
+	}
+
 	const mock = (endpoint, classContent) => {
 		mockRequire(path.join(Fetcher.apiPath, endpoint), classContent);
 	};
 
 	before(() => {
+		mock('invalid-api-class-endpoint/list', { foo: 'bar' });
 		mock('no-process-endpoint/list', class {});
-		mock('process-throws-endpoint/post', class {
-			async process() {
-				throw new Error('some internal error');
-			}
-		});
-		mock('validate-throws-endpoint/put', class {
-			async validate() {
-				throw new Error('some data invalid');
-			}
-
-			async process() {
-				return 1;
-			}
-		});
-		mock('struct-endpoint/list', class {
-			get struct() {
-				return [{ foo: 'string' }];
-			}
-
-			async process() {
-				return 1;
-			}
-		});
-		mock('validate-correctly-endpoint/list', class {
-			async validate() {
-				return true;
-			}
-
-			async process() {
-				return 1;
-			}
-		});
-		mock('valid-endpoint/list', class {
-			async process() {
-				return 1;
-			}
-		});
+		mock('process-rejects-endpoint/post', ProcessRejectsClass);
+		mock('process-rejects-default-message-endpoint/post', ProcessRejectsDefaultClass);
+		mock('validate-rejects-endpoint/put', ValidateRejectsClass);
+		mock('validate-rejects-default-message-endpoint/post', ValidateRejectsDefaultClass);
+		mock('struct-endpoint/list', StructClass);
+		mock('struct-multiple-endpoint/list', StructMultipleClass);
+		mock('validate-correctly-endpoint/list', ValidateOkClass);
+		mock('valid-endpoint/list', ValidProcessClass);
 	});
 
 	after(() => {
 		mockRequire.stopAll();
 	});
+
+	const test = async(myApi, code) => {
+		const result = await myApi.dispatch();
+		assert.deepEqual(result.code, code);
+	};
 
 	describe('should reject', function() {
 		const testConstructorReject = (APIErrorCode, requestData) => {
@@ -127,77 +152,99 @@ describe('API', function() {
 
 	describe('should return code 500', function() {
 
-		const test = async myApi => {
-			const result = await myApi.dispatch();
-			assert.deepEqual(result.code, 500);
-		};
-
 		it('when api file not found', async function() {
 			await test(new API({
 				endpoint: 'api/unknown-endpoint'
-			}));
+			}), 500);
+		});
+
+		it('when api file hasn\'t a class', async function() {
+			await test(new API({
+				endpoint: 'api/invalid-api-class-endpoint'
+			}), 500);
 		});
 
 		it('when api file found but api object has not a process method', async function() {
 			await test(new API({
 				endpoint: 'api/no-process-endpoint'
-			}));
+			}), 500);
 		});
 
 		it('when api process method throw an internal server error', async function() {
 			await test(new API({
-				endpoint: 'api/process-throws-endpoint',
+				endpoint: 'api/process-rejects-endpoint',
 				method: 'post'
-			}));
+			}), 500);
+		});
+
+		it('when api process method throw an internal server error - default message', async function() {
+			await test(new API({
+				endpoint: 'api/process-rejects-default-message-endpoint',
+				method: 'post'
+			}), 500);
 		});
 	});
 
 	describe('should return code 400', function() {
 
-		const test = async myApi => {
-			const result = await myApi.dispatch();
-			assert.deepEqual(result.code, 400);
-		};
-
-		it('when api validate method throw a data invalid error', async function() {
+		it('when api validate method throw a data invalid', async function() {
 			await test(new API({
-				endpoint: 'api/validate-throws-endpoint',
+				endpoint: 'api/validate-rejects-endpoint',
 				method: 'put'
-			}));
+			}), 400);
+		});
+
+		it('when api validate method throw a data invalid - default message', async function() {
+			await test(new API({
+				endpoint: 'api/validate-rejects-default-message-endpoint',
+				method: 'post'
+			}), 400);
 		});
 
 		it('when api data is invlaid against struct', async function() {
 			await test(new API({
 				endpoint: 'api/struct-endpoint'
-			}));
+			}), 400);
+
+			await test(new API({
+				endpoint: 'api/struct-endpoint',
+				data: { unknownField: '123' }
+			}), 400);
+		});
+
+		it('when api data is invlaid against struct multiple', async function() {
+			await test(new API({
+				endpoint: 'api/struct-multiple-endpoint',
+				data: { foo: '123' }
+			}), 400);
+
+			await test(new API({
+				endpoint: 'api/struct-multiple-endpoint',
+				data: { bar: 123 }
+			}), 400);
 		});
 
 	});
 
 	describe('should return code 200', function() {
 
-		const test = async myApi => {
-			const result = await myApi.dispatch();
-			assert.deepEqual(result.code, 200);
-		};
-
 		it('when api validates correctly', async function() {
 			await test(new API({
 				endpoint: 'api/validate-correctly-endpoint'
-			}));
+			}), 200);
 		});
 
 		it('when api validates correctly the struct', async function() {
 			await test(new API({
 				endpoint: 'api/struct-endpoint',
 				data: { foo: 'bar' }
-			}));
+			}), 200);
 		});
 
 		it('when api has no validate method', async function() {
 			await test(new API({
 				endpoint: 'api/valid-endpoint'
-			}));
+			}), 200);
 		});
 	});
 
