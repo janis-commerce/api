@@ -91,8 +91,13 @@ class API {
 				await apiController.validate(this.data, ...pathParams);
 
 		} catch(err) {
+
+			/* eslint-disable no-underscore-dangle */
+			const code = err._httpCode && err._httpCode >= 400 && err._httpCode < 500 ? err._httpCode : 400;
+			/* eslint-enable */
+
 			return {
-				code: 400, // returns a 400 http code
+				code, // returns a 4xx http code
 				message: err.message || 'data invalid'
 			};
 		}
@@ -105,14 +110,23 @@ class API {
 			result = await apiController.process(this.data, ...pathParams);
 
 		} catch(err) {
+
+			/* eslint-disable no-underscore-dangle */
+			const code = err._httpCode && err._httpCode >= 500 ? err._httpCode : 500;
+			/* eslint-enable */
+
 			return {
-				code: 500, // returns a 500 http code
+				code, // returns a 5xx http code
 				message: err.message || 'internal server error'
 			};
 		}
 
+		/* eslint-disable no-underscore-dangle */
+		const code = this._isObject(result) && result._httpCode && result._httpCode < 400 ? result._httpCode : 200;
+		/* eslint-enable */
+
 		return {
-			code: 200, // returns a 200 http code
+			code, // returns a < 4xx http code or 200
 			body: result
 		};
 	}
