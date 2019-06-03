@@ -12,9 +12,20 @@ const { APIError, Fetcher } = require('./../api');
 
 describe('API', function() {
 
+	class CustomError extends Error {}
+	const customError = new CustomError();
+
+	let response = 1;
+	let httpCode = 400;
+
+	afterEach(() => {
+		response = 1;
+		httpCode = 400;
+	});
+
 	class ValidProcessClass {
 		async process() {
-			return 1;
+			return response;
 		}
 	}
 
@@ -33,6 +44,15 @@ describe('API', function() {
 	class ValidateRejectsClass extends ValidProcessClass {
 		async validate() {
 			throw new Error('some data invalid');
+		}
+	}
+
+	class ValidateRejectsCustomCodeClass extends ValidProcessClass {
+		async validate() {
+			/* eslint-disable no-underscore-dangle */
+			customError._httpCode = httpCode;
+			/* eslint-enable no-underscore-dangle */
+			throw customError;
 		}
 	}
 
@@ -60,6 +80,15 @@ describe('API', function() {
 		}
 	}
 
+	class ProcessRejectsCustomCodeClass {
+		async process() {
+			/* eslint-disable no-underscore-dangle */
+			customError._httpCode = httpCode;
+			/* eslint-enable no-underscore-dangle */
+			throw customError;
+		}
+	}
+
 	const mock = (endpoint, classContent) => {
 		mockRequire(path.join(Fetcher.apiPath, endpoint), classContent);
 	};
@@ -67,10 +96,12 @@ describe('API', function() {
 	before(() => {
 		mock('invalid-api-class-endpoint/list', { foo: 'bar' });
 		mock('no-process-endpoint/list', class {});
-		mock('process-rejects-endpoint/post', ProcessRejectsClass);
-		mock('process-rejects-default-message-endpoint/post', ProcessRejectsDefaultClass);
 		mock('validate-rejects-endpoint/put', ValidateRejectsClass);
 		mock('validate-rejects-default-message-endpoint/post', ValidateRejectsDefaultClass);
+		mock('validate-rejects-custom-code-endpoint/post', ValidateRejectsCustomCodeClass);
+		mock('process-rejects-endpoint/post', ProcessRejectsClass);
+		mock('process-rejects-default-message-endpoint/post', ProcessRejectsDefaultClass);
+		mock('process-rejects-custom-code-endpoint/post', ProcessRejectsCustomCodeClass);
 		mock('struct-endpoint/list', StructClass);
 		mock('struct-multiple-endpoint/list', StructMultipleClass);
 		mock('validate-correctly-endpoint/list', ValidateOkClass);
@@ -183,6 +214,17 @@ describe('API', function() {
 				method: 'post'
 			}), 500);
 		});
+
+		it('when api process method throw a custom code error - default message', async function() {
+
+			httpCode = 501;
+
+			await test(new API({
+				endpoint: 'api/process-rejects-custom-code-endpoint',
+				method: 'post'
+			}), 501);
+		});
+
 	});
 
 	describe('should return code 400', function() {
@@ -199,6 +241,16 @@ describe('API', function() {
 				endpoint: 'api/validate-rejects-default-message-endpoint',
 				method: 'post'
 			}), 400);
+		});
+
+		it('when api validate method throw a custom code - default message', async function() {
+
+			httpCode = 401;
+
+			await test(new API({
+				endpoint: 'api/validate-rejects-custom-code-endpoint',
+				method: 'post'
+			}), 401);
 		});
 
 		it('when api data is invlaid against struct', async function() {
@@ -242,6 +294,22 @@ describe('API', function() {
 		});
 
 		it('when api has no validate method', async function() {
+			await test(new API({
+				endpoint: 'api/valid-endpoint'
+			}), 200);
+		});
+
+		it('when api response a custom HTTP Code', async function() {
+			response = { _httpCode: 201 };
+
+			await test(new API({
+				endpoint: 'api/valid-endpoint'
+			}), 201);
+		});
+
+		it('when api response with response headers', async function() {
+			response = { _headers: { 'valid-header': 123 } };
+
 			await test(new API({
 				endpoint: 'api/valid-endpoint'
 			}), 200);

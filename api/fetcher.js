@@ -48,8 +48,10 @@ class Fetcher {
 
 		} catch(err) {
 
+			/* istanbul ignore next */
 			if(err instanceof ReferenceError || err instanceof TypeError || err instanceof SyntaxError || err instanceof RangeError
 				|| err.code !== 'MODULE_NOT_FOUND' || !(~err.message.indexOf(filePath)))
+				/* istanbul ignore next */
 				logger.error('Module', err);
 
 			APIController = false;

@@ -94,7 +94,7 @@ class API {
 
 			/* eslint-disable no-underscore-dangle */
 			const code = err._httpCode && err._httpCode >= 400 && err._httpCode < 500 ? err._httpCode : 400;
-			/* eslint-enable */
+			/* eslint-enable no-underscore-dangle */
 
 			return {
 				code, // returns a 4xx http code
@@ -113,7 +113,7 @@ class API {
 
 			/* eslint-disable no-underscore-dangle */
 			const code = err._httpCode && err._httpCode >= 500 ? err._httpCode : 500;
-			/* eslint-enable */
+			/* eslint-enable no-underscore-dangle */
 
 			return {
 				code, // returns a 5xx http code
@@ -123,10 +123,12 @@ class API {
 
 		/* eslint-disable no-underscore-dangle */
 		const code = this._isObject(result) && result._httpCode && result._httpCode < 400 ? result._httpCode : 200;
-		/* eslint-enable */
+		const headers = this._isObject(result) && result._headers && this._isObject(result._headers) ? result._headers : {};
+		/* eslint-enable no-underscore-dangle */
 
 		return {
 			code, // returns a < 4xx http code or 200
+			headers,
 			body: result
 		};
 	}
