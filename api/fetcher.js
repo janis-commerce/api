@@ -36,7 +36,7 @@ class Fetcher {
 	 */
 	getAPIController() {
 
-		const filePath = this._getFilePath();
+		const { filePath } = this;
 
 		let APIController;
 
@@ -65,7 +65,7 @@ class Fetcher {
 		try {
 			apiController = new APIController();
 		} catch(err) {
-			throw new APIError(`API Controller '${filePath}' is not a api class`, APIError.codes.INVALID_API);
+			throw new APIError(`API Controller '${filePath}' is not a API class`, APIError.codes.INVALID_API);
 		}
 
 		return apiController;
@@ -74,10 +74,10 @@ class Fetcher {
 	/**
 	 * Make and returns the fileName based on endpoint and http method
 	 * @example
-	 * this._getFilePath() // this.endpoint = '/products/10/skus/'; this.method = 'get'
+	 * this.filePath() // this.endpoint = '/products/10/skus/'; this.method = 'get'
 	 * products/skus/get.js
 	 */
-	_getFilePath() {
+	get filePath() {
 
 		const urlParts = flow(
 			toLower,
@@ -97,9 +97,9 @@ class Fetcher {
 	}
 
 	/**
-	 * @param {Array} Path parameters
+	 * @return {Array} Path parameters
 	 */
-	getPathParameters() {
+	get pathParameters() {
 		return flow(
 			toLower,
 			split('/'),

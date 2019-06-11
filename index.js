@@ -1,5 +1,8 @@
 'use strict';
 
-const { API } = require('./api');
+const { API, APIDispatcher } = require('./api');
 
-module.exports = API;
+module.exports = {
+	API,
+	APIDispatcher
+};

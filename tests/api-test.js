@@ -5,7 +5,7 @@ const mockRequire = require('mock-require');
 
 const assert = require('assert');
 
-const API = require('./../index');
+const { API, APIDispatcher } = require('./../index');
 const { APIError, Fetcher } = require('./../api');
 
 /* eslint-disable prefer-arrow-callback */
@@ -184,32 +184,32 @@ describe('API', function() {
 	describe('should return code 500', function() {
 
 		it('when api file not found', async function() {
-			await test(new API({
+			await test(new APIDispatcher({
 				endpoint: 'api/unknown-endpoint'
 			}), 500);
 		});
 
 		it('when api file hasn\'t a class', async function() {
-			await test(new API({
+			await test(new APIDispatcher({
 				endpoint: 'api/invalid-api-class-endpoint'
 			}), 500);
 		});
 
 		it('when api file found but api object has not a process method', async function() {
-			await test(new API({
+			await test(new APIDispatcher({
 				endpoint: 'api/no-process-endpoint'
 			}), 500);
 		});
 
 		it('when api process method throw an internal server error', async function() {
-			await test(new API({
+			await test(new APIDispatcher({
 				endpoint: 'api/process-rejects-endpoint',
 				method: 'post'
 			}), 500);
 		});
 
 		it('when api process method throw an internal server error - default message', async function() {
-			await test(new API({
+			await test(new APIDispatcher({
 				endpoint: 'api/process-rejects-default-message-endpoint',
 				method: 'post'
 			}), 500);
@@ -219,7 +219,7 @@ describe('API', function() {
 
 			httpCode = 501;
 
-			await test(new API({
+			await test(new APIDispatcher({
 				endpoint: 'api/process-rejects-custom-code-endpoint',
 				method: 'post'
 			}), 501);
@@ -230,14 +230,14 @@ describe('API', function() {
 	describe('should return code 400', function() {
 
 		it('when api validate method throw a data invalid', async function() {
-			await test(new API({
+			await test(new APIDispatcher({
 				endpoint: 'api/validate-rejects-endpoint',
 				method: 'put'
 			}), 400);
 		});
 
 		it('when api validate method throw a data invalid - default message', async function() {
-			await test(new API({
+			await test(new APIDispatcher({
 				endpoint: 'api/validate-rejects-default-message-endpoint',
 				method: 'post'
 			}), 400);
@@ -247,30 +247,30 @@ describe('API', function() {
 
 			httpCode = 401;
 
-			await test(new API({
+			await test(new APIDispatcher({
 				endpoint: 'api/validate-rejects-custom-code-endpoint',
 				method: 'post'
 			}), 401);
 		});
 
 		it('when api data is invlaid against struct', async function() {
-			await test(new API({
+			await test(new APIDispatcher({
 				endpoint: 'api/struct-endpoint'
 			}), 400);
 
-			await test(new API({
+			await test(new APIDispatcher({
 				endpoint: 'api/struct-endpoint',
 				data: { unknownField: '123' }
 			}), 400);
 		});
 
 		it('when api data is invlaid against struct multiple', async function() {
-			await test(new API({
+			await test(new APIDispatcher({
 				endpoint: 'api/struct-multiple-endpoint',
 				data: { foo: '123' }
 			}), 400);
 
-			await test(new API({
+			await test(new APIDispatcher({
 				endpoint: 'api/struct-multiple-endpoint',
 				data: { bar: 123 }
 			}), 400);
@@ -281,20 +281,20 @@ describe('API', function() {
 	describe('should return code 200', function() {
 
 		it('when api validates correctly', async function() {
-			await test(new API({
+			await test(new APIDispatcher({
 				endpoint: 'api/validate-correctly-endpoint'
 			}), 200);
 		});
 
 		it('when api validates correctly the struct', async function() {
-			await test(new API({
+			await test(new APIDispatcher({
 				endpoint: 'api/struct-endpoint',
 				data: { foo: 'bar' }
 			}), 200);
 		});
 
 		it('when api has no validate method', async function() {
-			await test(new API({
+			await test(new APIDispatcher({
 				endpoint: 'api/valid-endpoint'
 			}), 200);
 		});
@@ -302,7 +302,7 @@ describe('API', function() {
 		it('when api response a custom HTTP Code', async function() {
 			response = { _httpCode: 201 };
 
-			await test(new API({
+			await test(new APIDispatcher({
 				endpoint: 'api/valid-endpoint'
 			}), 201);
 		});
@@ -310,7 +310,7 @@ describe('API', function() {
 		it('when api response with response headers', async function() {
 			response = { _headers: { 'valid-header': 123 } };
 
-			await test(new API({
+			await test(new APIDispatcher({
 				endpoint: 'api/valid-endpoint'
 			}), 200);
 		});
