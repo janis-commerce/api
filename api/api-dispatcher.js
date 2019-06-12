@@ -63,116 +63,126 @@ class APIDispatcher {
 		return this._fetcher;
 	}
 
-	get apiController() {
-
-		const apiController = this.fetcher.getAPIController();
-
-		if(!(apiController instanceof API))
-			throw new APIError(`API '${apiController.constructor.name}' does not inherit from API`, APIError.codes.INVALID_API_INHERITANCE);
-
-		// If controller & process exists, execute method
-		if(!apiController.process)
-			throw new APIError(`API '${apiController.constructor.name}' Method 'process' not found`, APIError.codes.PROCESS_METHOD_NOT_FOUND);
-
-		return apiController;
-	}
-
-	get pathParameters() {
-		return this.fetcher.pathParameters;
-	}
-
 	/**
 	 * API Dispatch
 	 *
-	 * @return {Promise} Object with code and body
 	 */
 	async dispatch() {
 
-		let apiController;
+		this.prepare();
+
+		await this.validate();
+
+		await this.process();
+
+		return this.response();
+	}
+
+	prepare() {
 
 		try {
 
-			({ apiController } = this.apiController);
+			this.api = this.fetcher.apiController;
 
 		} catch(err) {
-			return {
-				code: 500, // returns a 500 http code
-				message: err.message
-			};
+
+			this.api = new API(); // para poder setear error correctamente
+
+			/**
+			 * Errores posibiles:
+			 * 	1. no encuentra el archivo en api/path/file.js
+			 * 	2. el archivo no exporta una clase
+			 */
+			this.setResponseError(err.message, 500);
+			return;
 		}
+
+		this.api.data = this.data;
+		this.api.pathParameters = this.fetcher.pathParameters;
+		this.api.headers = this.headers;
+		this.api.cookies = this.cookies;
+	}
+
+	async validate() {
+
+		if(this.hasError)
+			return;
 
 		try {
 
 			// Check data against struct if any
-			this._validateStruct(apiController);
+			this._validateStruct();
 
 			// API request validation
-			if(apiController.validate)
-				await apiController.validate(this.data, ...this.pathParameters);
+			if(this.api.validate && typeof this.api.validate === 'function')
+				await this.api.validate();
 
 		} catch(err) {
 
-			/* eslint-disable-next-line no-underscore-dangle */
-			const code = err._httpCode && err._httpCode >= 400 && err._httpCode < 500 ? err._httpCode : 400;
+			const code = 400;
+			const message = err.message || 'data invalid';
 
-			return {
-				code, // returns a 4xx http code
-				message: err.message || 'data invalid'
-			};
+			this.setResponseError(message, code);
 		}
+	}
 
-		let result;
+	/**
+	 * Validates the struct if any
+	 *
+	 */
+	_validateStruct() {
+
+		if(!this.api.struct)
+			return; // Nothing to validate
+
+		const args = !Array.isArray(this.api.struct) ? [this.api.struct] : this.api.struct;
+
+		const Schema = struct(...args);
+
+		const [error, parsed] = Schema.validate(this.api.data);
+
+		if(error)
+			throw new APIError(error.reason || error.message, APIError.codes.INVALID_STRUCT);
+
+		this.api.data = parsed; // Parsed data with default value added.
+	}
+
+	async process() {
+
+		if(this.hasError)
+			return;
 
 		try {
 
 			// call api controller process
-			result = await apiController.process(this.data, ...this.pathParameters);
+			await this.api.process();
 
 		} catch(err) {
 
-			/* eslint-disable-next-line no-underscore-dangle */
-			const code = err._httpCode && err._httpCode >= 500 ? err._httpCode : 500;
+			const code = 500;
+			const message = err.message || 'internal server error';
 
-			return {
-				code, // returns a 5xx http code
-				message: err.message || 'internal server error'
-			};
+			this.setResponseError(message, code);
 		}
-
-		/* eslint-disable no-underscore-dangle */
-		const code = this._isObject(result) && result._httpCode && result._httpCode < 400 ? result._httpCode : 200;
-		const headers = this._isObject(result) && result._headers && this._isObject(result._headers) ? result._headers : {};
-		/* eslint-enable no-underscore-dangle */
-
-		return {
-			code, // returns a < 4xx http code or 200
-			headers,
-			body: result
-		};
 	}
 
-	/**
-	 * Validates the struct
-	 *
-	 * @param {Object} api The api
-	 */
-	_validateStruct(api) {
+	setResponseError(message, httpCode) {
+		this.hasError = true;
 
-		if(!api.struct) // Nothing to validate
-			return;
+		if(!this.api.response.code)
+			this.api.setCode(httpCode);
 
-		const args = !Array.isArray(api.struct) ? [api.struct] : api.struct;
-
-		const Schema = struct(...args);
-
-		const [error, parsed] = Schema.validate(this.data);
-
-		if(error)
-			throw new APIError(error.reason || error.message, 'DATA_INVALID', 'DATA_INVALID');
-
-		this.data = parsed; // Parsed data with default value added.
+		this.api
+			.setBody({ message });
 	}
 
+	response() {
+
+		if(!this.api.response.code)
+			this.api.setCode(200);
+
+		return this.api.response;
+	}
 }
 
 module.exports = APIDispatcher;

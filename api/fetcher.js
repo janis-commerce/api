@@ -9,6 +9,7 @@ const {
 } = require('lodash/fp');
 let { filter } = require('lodash/fp');
 
+const API = require('./api');
 const APIError = require('./error');
 
 filter = filter.convert({ cap: false }); // to use index
@@ -31,10 +32,9 @@ class Fetcher {
 	/**
 	 * Get a new REST API Controller Instance
 	 *
-	 * @param {string} file The file
 	 * @return {Module} The rest controller.
 	 */
-	getAPIController() {
+	get apiController() {
 
 		const { filePath } = this;
 
@@ -67,6 +67,14 @@ class Fetcher {
 		} catch(err) {
 			throw new APIError(`API Controller '${filePath}' is not a API class`, APIError.codes.INVALID_API);
 		}
+
+		// validate api inheritance
+		if(!(apiController instanceof API))
+			throw new Error(`API '${apiController.constructor.name}' does not inherit from API`);
+
+		// validate api process method
+		if(!apiController.process || typeof apiController.process !== 'function')
+			throw new Error(`API '${apiController.constructor.name}' Method 'process' not found`);
 
 		return apiController;
 	}

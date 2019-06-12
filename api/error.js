@@ -5,15 +5,17 @@ class APIError extends Error {
 	static get codes() {
 
 		return {
+			// used in api dispacther validator...
 			INVALID_REQUEST_DATA: 1,
 			INVALID_ENDPOINT: 2,
 			INVALID_METHOD: 3,
 			INVALID_HEADERS: 4,
 			INVALID_COOKIES: 5,
+			// used in fetcher...
 			API_NOT_FOUND: 6,
 			INVALID_API: 7,
-			INVALID_API_INHERITANCE: 8,
-			PROCESS_METHOD_NOT_FOUND: 9
+			// api validation
+			INVALID_STRUCT: 8
 		};
 	}
 
