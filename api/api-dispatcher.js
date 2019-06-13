@@ -83,6 +83,10 @@ class APIDispatcher {
 		try {
 
 			this.api = this.fetcher.apiController;
+			this.api.data = this.data;
+			this.api.pathParameters = this.fetcher.pathParameters;
+			this.api.headers = this.headers;
+			this.api.cookies = this.cookies;
 
 		} catch(err) {
 
@@ -94,13 +98,7 @@ class APIDispatcher {
 			 * 	2. el archivo no exporta una clase
 			 */
 			this.setResponseError(err.message, 500);
-			return;
 		}
-
-		this.api.data = this.data;
-		this.api.pathParameters = this.fetcher.pathParameters;
-		this.api.headers = this.headers;
-		this.api.cookies = this.cookies;
 	}
 
 	async validate() {

@@ -6,6 +6,8 @@ class API {
 		this._request = {};
 
 		this._response = {
+			code: undefined,
+			body: undefined,
 			headers: {},
 			cookies: {}
 		};
