@@ -154,240 +154,240 @@ describe('Dispatcher', function() {
 		assert.deepEqual(result.cookies, cookies, 'Error in expected response cookies');
 	};
 
-	const testConstructorReject = (APIErrorCode, requestData) => {
-		assert.throws(() => {
-			new Dispatcher(requestData);
-		}, {
-			name: 'APIError',
-			code: APIErrorCode
-		});
-	};
+	context('invalid data received', function() {
 
-	it('should reject when no request data given', function() {
-		testConstructorReject(APIError.codes.INVALID_REQUEST_DATA);
-	});
+		const testConstructorReject = (APIErrorCode, requestData) => {
+			assert.throws(() => {
+				new Dispatcher(requestData);
+			}, {
+				name: 'APIError',
+				code: APIErrorCode
+			});
+		};
 
-	it('should reject when no object request data received', function() {
-		[
-			'foo',
-			true,
-			['foo', 'bar'],
-			16
-		].forEach(requestData => testConstructorReject(APIError.codes.INVALID_REQUEST_DATA, requestData));
-	});
-
-	it('should reject when no enpoint given', function() {
-		testConstructorReject(APIError.codes.INVALID_ENDPOINT, {});
-	});
-
-	it('should reject when invalid method given', function() {
-
-		const endpoint = 'valid/endpoint';
-
-		[
+		const noStrings = [
 			1,
 			true,
 			{ foo: 'bar' },
 			['foo', 'bar']
-		].forEach(method => testConstructorReject(APIError.codes.INVALID_METHOD, { endpoint, method }));
-	});
+		];
 
-	it('should reject when invalid headers given', function() {
-
-		const endpoint = 'valid/endpoint';
-
-		[
+		const noObjects = [
 			1,
 			true,
 			'foo',
 			['foo', 'bar']
-		].forEach(headers => testConstructorReject(APIError.codes.INVALID_HEADERS, { endpoint, headers }));
+		];
+
+		it('should reject when no request data given', function() {
+			testConstructorReject(APIError.codes.INVALID_REQUEST_DATA);
+		});
+
+		it('should reject when no object request data received', function() {
+			noObjects.forEach(requestData => testConstructorReject(APIError.codes.INVALID_REQUEST_DATA, requestData));
+		});
+
+		it('should reject when no enpoint given', function() {
+			testConstructorReject(APIError.codes.INVALID_ENDPOINT, {});
+		});
+
+		it('should reject when invalid method given', function() {
+			const endpoint = 'valid/endpoint';
+			noStrings.forEach(method => testConstructorReject(APIError.codes.INVALID_METHOD, { endpoint, method }));
+		});
+
+		it('should reject when invalid headers given', function() {
+			const endpoint = 'valid/endpoint';
+			noObjects.forEach(headers => testConstructorReject(APIError.codes.INVALID_HEADERS, { endpoint, headers }));
+		});
+
+		it('should reject when invalid cookies given', function() {
+			const endpoint = 'valid/endpoint';
+			noObjects.forEach(cookies => testConstructorReject(APIError.codes.INVALID_COOKIES, { endpoint, cookies }));
+		});
 	});
 
-	it('should reject when invalid cookies given', function() {
+	context('5xx errors', function() {
 
-		const endpoint = 'valid/endpoint';
+		it('should return code 500 when api file not found', async function() {
+			await test({
+				endpoint: 'api/unknown-endpoint'
+			}, 500);
+		});
 
-		[
-			1,
-			true,
-			'foo',
-			['foo', 'bar']
-		].forEach(cookies => testConstructorReject(APIError.codes.INVALID_COOKIES, { endpoint, cookies }));
+		it('should return code 500 when api file hasn\'t a class', async function() {
+			await test({
+				endpoint: 'api/invalid-api-class-endpoint'
+			}, 500);
+		});
+
+		it('should return code 500 when api does not inherit from API', async function() {
+			await test({
+				endpoint: 'api/invalid-api-inheritance'
+			}, 500);
+		});
+
+		it('should return code 500 when api file found but api object has not a process method', async function() {
+			await test({
+				endpoint: 'api/no-process-endpoint'
+			}, 500);
+		});
+
+		it('should return code 500 when api process method throw an internal server error', async function() {
+			await test({
+				endpoint: 'api/process-rejects-endpoint',
+				method: 'post'
+			}, 500);
+		});
+
+		it('should return code 500 when api process method throw an internal server error - default message', async function() {
+			await test({
+				endpoint: 'api/process-rejects-default-message-endpoint',
+				method: 'post'
+			}, 500);
+		});
+
+		it('should return a custom HTTP Code and default message when code given', async function() {
+
+			httpCode = 501;
+
+			await test({
+				endpoint: 'api/process-rejects-custom-code-endpoint',
+				method: 'post'
+			}, 501);
+		});
 	});
 
-	it('should return code 500 when api file not found', async function() {
-		await test({
-			endpoint: 'api/unknown-endpoint'
-		}, 500);
+	context('4xx errors', function() {
+
+		it('should return code 400 when api validate method throw a data invalid', async function() {
+			await test({
+				endpoint: 'api/validate-rejects-endpoint',
+				method: 'put'
+			}, 400);
+		});
+
+		it('should return code 400 when api validate method throw a data invalid - default message', async function() {
+			await test({
+				endpoint: 'api/validate-rejects-default-message-endpoint',
+				method: 'post'
+			}, 400);
+		});
+
+		it('should response with custom HTTP Code and default message when validate fails and code given', async function() {
+
+			httpCode = 401;
+
+			await test({
+				endpoint: 'api/validate-rejects-custom-code-endpoint',
+				method: 'post'
+			}, 401);
+		});
+
+		it('should return code 400 when api data is invlaid against struct', async function() {
+			await test({
+				endpoint: 'api/struct-endpoint'
+			}, 400);
+
+			await test({
+				endpoint: 'api/struct-endpoint',
+				data: { unknownField: '123' }
+			}, 400);
+		});
+
+		it('should return code 400 when api data is invlaid against struct multiple', async function() {
+			await test({
+				endpoint: 'api/struct-multiple-endpoint',
+				data: { foo: '123' }
+			}, 400);
+
+			await test({
+				endpoint: 'api/struct-multiple-endpoint',
+				data: { bar: 123 }
+			}, 400);
+		});
 	});
 
-	it('should return code 500 when api file hasn\'t a class', async function() {
-		await test({
-			endpoint: 'api/invalid-api-class-endpoint'
-		}, 500);
-	});
+	context('2xx responses', function() {
 
-	it('should return code 500 when api does not inherit from API', async function() {
-		await test({
-			endpoint: 'api/invalid-api-inheritance'
-		}, 500);
-	});
+		it('should return code 200 when api validates correctly', async function() {
+			await test({
+				endpoint: 'api/validate-correctly-endpoint'
+			}, 200);
+		});
 
-	it('should return code 500 when api file found but api object has not a process method', async function() {
-		await test({
-			endpoint: 'api/no-process-endpoint'
-		}, 500);
-	});
+		it('should return code 200 when api validates correctly the struct', async function() {
+			await test({
+				endpoint: 'api/struct-endpoint',
+				data: { foo: 'bar' }
+			}, 200);
+		});
 
-	it('should return code 500 when api process method throw an internal server error', async function() {
-		await test({
-			endpoint: 'api/process-rejects-endpoint',
-			method: 'post'
-		}, 500);
-	});
+		it('should return code 200 when api has no validate method', async function() {
+			await test({
+				endpoint: 'api/valid-endpoint'
+			}, 200);
+		});
 
-	it('should return code 500 when api process method throw an internal server error - default message', async function() {
-		await test({
-			endpoint: 'api/process-rejects-default-message-endpoint',
-			method: 'post'
-		}, 500);
-	});
+		it('should return api requestData with getters', async function() {
 
-	it('should return a custom HTTP Code and default message when code given', async function() {
+			extraProcess = api => {
+				assert.deepEqual(api.pathParameters, ['10']);
+				assert.deepEqual(api.headers, { 'my-header': 'foo' });
+				assert.deepEqual(api.cookies, { 'my-cookie': 'bar' });
+			};
 
-		httpCode = 501;
+			await test({
+				endpoint: 'api/valid-endpoint/10',
+				headers: { 'my-header': 'foo' },
+				cookies: { 'my-cookie': 'bar' }
+			}, 200);
+		});
 
-		await test({
-			endpoint: 'api/process-rejects-custom-code-endpoint',
-			method: 'post'
-		}, 501);
-	});
+		it('should response with a custom HTTP Code when given', async function() {
 
-	it('should return code 400 when api validate method throw a data invalid', async function() {
-		await test({
-			endpoint: 'api/validate-rejects-endpoint',
-			method: 'put'
-		}, 400);
-	});
+			httpCode = 201;
 
-	it('should return code 400 when api validate method throw a data invalid - default message', async function() {
-		await test({
-			endpoint: 'api/validate-rejects-default-message-endpoint',
-			method: 'post'
-		}, 400);
-	});
+			await test({
+				endpoint: 'api/valid-endpoint'
+			}, 201);
+		});
 
-	it('should response with custom HTTP Code and default message when validate fails and code given', async function() {
+		it('should return code 200 when api response and set headers', async function() {
 
-		httpCode = 401;
+			responseHeaders = { 'valid-header': 123 };
 
-		await test({
-			endpoint: 'api/validate-rejects-custom-code-endpoint',
-			method: 'post'
-		}, 401);
-	});
+			await test({
+				endpoint: 'api/valid-endpoint'
+			}, 200, responseHeaders);
+		});
 
-	it('should return code 400 when api data is invlaid against struct', async function() {
-		await test({
-			endpoint: 'api/struct-endpoint'
-		}, 400);
+		it('should return code 200 when api response and set an individual header', async function() {
 
-		await test({
-			endpoint: 'api/struct-endpoint',
-			data: { unknownField: '123' }
-		}, 400);
-	});
+			responseHeader = { name: 'valid-header', value: 123 };
 
-	it('should return code 400 when api data is invlaid against struct multiple', async function() {
-		await test({
-			endpoint: 'api/struct-multiple-endpoint',
-			data: { foo: '123' }
-		}, 400);
+			await test({
+				endpoint: 'api/valid-endpoint'
+			}, 200, { 'valid-header': 123 });
+		});
 
-		await test({
-			endpoint: 'api/struct-multiple-endpoint',
-			data: { bar: 123 }
-		}, 400);
-	});
+		it('should return code 200 when api response and set cookies', async function() {
 
-	it('should return code 200 when api validates correctly', async function() {
-		await test({
-			endpoint: 'api/validate-correctly-endpoint'
-		}, 200);
-	});
+			responseCookies = { 'valid-cookie': 123 };
 
-	it('should return code 200 when api validates correctly the struct', async function() {
-		await test({
-			endpoint: 'api/struct-endpoint',
-			data: { foo: 'bar' }
-		}, 200);
-	});
+			await test({
+				endpoint: 'api/valid-endpoint'
+			}, 200, {}, responseCookies);
+		});
 
-	it('should return code 200 when api has no validate method', async function() {
-		await test({
-			endpoint: 'api/valid-endpoint'
-		}, 200);
-	});
+		it('should return code 200 when api response and set an individual cookie', async function() {
 
-	it('should return api requestData with getters', async function() {
+			responseCookie = { name: 'valid-cookie', value: 123 };
 
-		extraProcess = api => {
-			assert.deepEqual(api.pathParameters, ['10']);
-			assert.deepEqual(api.headers, { 'my-header': 'foo' });
-			assert.deepEqual(api.cookies, { 'my-cookie': 'bar' });
-		};
-
-		await test({
-			endpoint: 'api/valid-endpoint/10',
-			headers: { 'my-header': 'foo' },
-			cookies: { 'my-cookie': 'bar' }
-		}, 200);
-	});
-
-	it('should response with a custom HTTP Code when given', async function() {
-
-		httpCode = 201;
-
-		await test({
-			endpoint: 'api/valid-endpoint'
-		}, 201);
-	});
-
-	it('should return code 200 when api response and set headers', async function() {
-
-		responseHeaders = { 'valid-header': 123 };
-
-		await test({
-			endpoint: 'api/valid-endpoint'
-		}, 200, responseHeaders);
-	});
-
-	it('should return code 200 when api response and set an individual header', async function() {
-
-		responseHeader = { name: 'valid-header', value: 123 };
-
-		await test({
-			endpoint: 'api/valid-endpoint'
-		}, 200, { 'valid-header': 123 });
-	});
-
-	it('should return code 200 when api response and set cookies', async function() {
-
-		responseCookies = { 'valid-cookie': 123 };
-
-		await test({
-			endpoint: 'api/valid-endpoint'
-		}, 200, {}, responseCookies);
-	});
-
-	it('should return code 200 when api response and set an individual cookie', async function() {
-
-		responseCookie = { name: 'valid-cookie', value: 123 };
-
-		await test({
-			endpoint: 'api/valid-endpoint'
-		}, 200, {}, { 'valid-cookie': 123 });
+			await test({
+				endpoint: 'api/valid-endpoint'
+			}, 200, {}, { 'valid-cookie': 123 });
+		});
 	});
 
 });

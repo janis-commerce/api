@@ -11,9 +11,9 @@ A package for managing API from any origin.
 npm install @janiscommerce/api
 ```
 
-## APIDispatcher
-* **new APIDispatcher( object )**
-Construct an API
+## Dispatcher
+* **new Dispatcher( object )**
+Construct a Dispatcher with the request information
 
 * async **.dispatch()**
 This method dispatch the api instance.
@@ -24,9 +24,9 @@ Returns an object with `code` and the `body`.
 ### How to dispatch an API? (from a server)
 
 ```js
-const { APIDispatcher } = require('@janiscommerce/api');
+const { Dispatcher } = require('@janiscommerce/api');
 
-const dispatcher = new APIDispatcher({
+const dispatcher = new Dispatcher({
 	endpoint: 'api/pets',
 	method: 'get', // this is the default verb
 	data: { status: 'active' },

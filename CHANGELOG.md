@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- `tests` organization
+- improves in `readme.md`
+
+### Fixed
+- `Fetcher` jsdocs
+
 ## [1.4.0] - 2019-06-18
 ### Added
 - `husky` added for pre-commit
