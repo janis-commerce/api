@@ -1,7 +1,6 @@
 {
 	"exclude": [
 		"tests/",
-		"coverage/",
 		".eslintrc.js"
 	],
 	"cache": true,

@@ -1,8 +1,8 @@
 'use strict';
 
-const { API, APIDispatcher } = require('./api');
+const { API, Dispatcher } = require('./lib');
 
 module.exports = {
 	API,
-	APIDispatcher
+	Dispatcher
 };

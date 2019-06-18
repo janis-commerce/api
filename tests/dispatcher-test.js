@@ -5,12 +5,12 @@ const mockRequire = require('mock-require');
 
 const assert = require('assert');
 
-const { API, APIDispatcher } = require('./../index');
-const { APIError, Fetcher } = require('./../api');
+const { API, Dispatcher } = require('./..');
+const { APIError, Fetcher } = require('./../lib');
 
 /* eslint-disable prefer-arrow-callback */
 
-describe('API Dispatcher', function() {
+describe('Dispatcher', function() {
 
 	let httpCode;
 	let responseBody;
@@ -145,8 +145,8 @@ describe('API Dispatcher', function() {
 		mockRequire.stopAll();
 	});
 
-	const test = async(myApiData, code, headers = {}, cookies = {}) => {
-		const myApi = new APIDispatcher(myApiData);
+	const test = async (myApiData, code, headers = {}, cookies = {}) => {
+		const myApi = new Dispatcher(myApiData);
 		const result = await myApi.dispatch();
 
 		assert.deepEqual(result.code, code, `Error in expected response HTTP Code ${code} !== ${result.code}`);
@@ -156,7 +156,7 @@ describe('API Dispatcher', function() {
 
 	const testConstructorReject = (APIErrorCode, requestData) => {
 		assert.throws(() => {
-			new APIDispatcher(requestData);
+			new Dispatcher(requestData);
 		}, {
 			name: 'APIError',
 			code: APIErrorCode
