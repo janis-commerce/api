@@ -388,6 +388,7 @@ describe('Dispatcher', function() {
 				endpoint: 'api/valid-endpoint'
 			}, 200, {}, { 'valid-cookie': 123 });
 		});
+
 	});
 
 });
