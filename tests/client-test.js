@@ -15,27 +15,34 @@ const { Fetcher, Client } = require('./../lib');
 
 /* eslint-disable prefer-arrow-callback */
 
-describe.only('Client API', function() {
+describe('Client', function() {
+
+	const clientField = 'name';
+	const clientFieldValue = 'the-client-name';
+
+	const theClient = {
+		id: 6,
+		[clientField]: clientFieldValue
+	};
+
+	let apiClientSetted;
 
 	const mockIdentifiers = config => mockRequire(Client.identifierFilePath, config);
 
 	const endpoint = 'valid-endpoint/list';
 
-	let myCallback = () => {};
-
 	class ValidAPI extends API {
 		async process() {
-			myCallback(this);
+			apiClientSetted = this.client;
 		}
 	}
 
 	beforeEach(() => {
-		myCallback = () => {};
+		apiClientSetted = null;
 		mockRequire(path.join(Fetcher.apiPath, endpoint), ValidAPI);
 	});
 
 	afterEach(() => {
-		myCallback = () => {};
 		mockRequire.stopAll();
 		sandbox.restore();
 
@@ -47,9 +54,11 @@ describe.only('Client API', function() {
 	const getSpyIdentifierFilePathGetter = () => sandbox.spy(Client, 'identifierFilePath', ['get']);
 
 	const assertNoClientSet = () => {
-		myCallback = api => {
-			assert.equal(api.client, undefined);
-		};
+		assert.equal(apiClientSetted, undefined);
+	};
+
+	const assertClientSet = () => {
+		assert.deepEqual(apiClientSetted, theClient);
 	};
 
 	const identifierApiFields = {
@@ -58,7 +67,7 @@ describe.only('Client API', function() {
 		cookie: 'cookies'
 	};
 
-	context('when no client identifier config found', function() {
+	context('when no client config identifier found at all', function() {
 		it('shouldn\'t set client', async function() {
 
 			const spyIdentifierFilePathGetter = getSpyIdentifierFilePathGetter();
@@ -79,11 +88,11 @@ describe.only('Client API', function() {
 		});
 	});
 
-	context('when client identifier config found if bad format', function() {
+	context('when bad client config identifier found', function() {
 
 		it('shouldn\'t set client if no \'header\', \'data\' or \'cookie\' configured in identifier', async function() {
 			mockIdentifiers({
-				clientField: 'foo'
+				clientField
 			});
 
 			const myApi = new Dispatcher({
@@ -95,11 +104,11 @@ describe.only('Client API', function() {
 			await myApi.dispatch();
 		});
 
-		Object.keys(identifierApiFields).forEach(apiIdentifierField => {
-			it(`shouldn't set client if '${apiIdentifierField}' is configured in identifier, but clientField not found`, async function() {
+		Object.keys(identifierApiFields).forEach(identifierFieldType => {
+			it(`shouldn't set client if '${identifierFieldType}' is configured in identifier, but clientField not found`, async function() {
 
 				mockIdentifiers({
-					[apiIdentifierField]: 'foo'
+					[identifierFieldType]: 'foo'
 				});
 
 				const myApi = new Dispatcher({
@@ -111,54 +120,151 @@ describe.only('Client API', function() {
 				await myApi.dispatch();
 			});
 		});
-
 	});
 
-	context('when client identifier valid config found', function() {
+	context('when valid client config identifier found', function() {
 
-		Object.keys(identifierApiFields).forEach(apiIdentifierField => {
+		Object.entries(identifierApiFields).forEach(([identifierFieldType, identifierApiField]) => {
 
-			it(`shouldn't set client if no ${apiIdentifierField} received`, async function() {
+			it(`shouldn't set client if no ${identifierFieldType} received`, async function() {
 
 				mockIdentifiers({
-					[apiIdentifierField]: 'client',
-					clientField: 'name'
+					[identifierFieldType]: 'client',
+					clientField
 				});
 
 				const myApi = new Dispatcher({
 					endpoint: 'api/valid-endpoint'
 				});
 
+				const stubGetByField = sandbox.stub(ActiveClient, 'getByField');
+
 				assertNoClientSet();
 
 				await myApi.dispatch();
+
+				assert(stubGetByField.notCalled);
 			});
-		});
 
-		Object.entries(identifierApiFields).forEach(([identifierField, identifierApiField]) => {
-
-			it(`shouldn't set client if ${identifierField} received but no client found by ActiveClient module`, async function() {
+			it(`shouldn't set client if empty ${identifierFieldType} received`, async function() {
 
 				mockIdentifiers({
-					[identifierField]: 'client',
-					clientField: 'name'
+					[identifierFieldType]: 'client',
+					clientField
+				});
+
+				const myApi = new Dispatcher({
+					endpoint: 'api/valid-endpoint',
+					[identifierApiField]: {}
+				});
+
+				const stubGetByField = sandbox.stub(ActiveClient, 'getByField');
+
+				assertNoClientSet();
+
+				await myApi.dispatch();
+
+				assert(stubGetByField.notCalled);
+			});
+
+			it(`shouldn't set client if no expected ${identifierFieldType} received`, async function() {
+
+				mockIdentifiers({
+					[identifierFieldType]: 'client',
+					clientField
 				});
 
 				const myApi = new Dispatcher({
 					endpoint: 'api/valid-endpoint',
 					[identifierApiField]: {
-						client: 'the-client-name'
+						[`other-${identifierFieldType}`]: clientFieldValue
+					}
+				});
+
+				const stubGetByField = sandbox.stub(ActiveClient, 'getByField');
+
+				assertNoClientSet();
+
+				await myApi.dispatch();
+
+				assert(stubGetByField.notCalled);
+			});
+
+			it(`shouldn't set client if ${identifierFieldType} received but no client found by ActiveClient module`, async function() {
+
+				mockIdentifiers({
+					[identifierFieldType]: 'client',
+					clientField
+				});
+
+				const myApi = new Dispatcher({
+					endpoint: 'api/valid-endpoint',
+					[identifierApiField]: {
+						client: clientFieldValue
 					}
 				});
 
 				const stubGetByField = sandbox.stub(ActiveClient, 'getByField')
 					.returns([]);
 
+				assertNoClientSet();
+
 				await myApi.dispatch();
 
-				assert(stubGetByField.calledOnceWithExactly('name', 'the-client-name'));
+				assert(stubGetByField.calledOnceWithExactly(clientField, clientFieldValue));
 			});
 
+			it(`should set client if ${identifierFieldType} received and client found by ActiveClient module`, async function() {
+
+				mockIdentifiers({
+					[identifierFieldType]: 'client',
+					clientField
+				});
+
+				const myApi = new Dispatcher({
+					endpoint: 'api/valid-endpoint',
+					[identifierApiField]: {
+						client: clientFieldValue
+					}
+				});
+
+				const stubGetByField = sandbox.stub(ActiveClient, 'getByField')
+					.returns(theClient);
+
+				await myApi.dispatch();
+
+				assertClientSet();
+
+				assert(stubGetByField.calledOnceWithExactly(clientField, clientFieldValue));
+			});
+
+		});
+
+		it('should set client if header received and client found by ActiveClient module with multiple identifiers', async function() {
+
+			mockIdentifiers([{
+				header: 'client-id',
+				clientField: 'id'
+			}, {
+				header: 'client',
+				clientField
+			}]);
+
+			const myApi = new Dispatcher({
+				endpoint: 'api/valid-endpoint',
+				headers: {
+					client: clientFieldValue
+				}
+			});
+
+			const stubGetByField = sandbox.stub(ActiveClient, 'getByField')
+				.returns(theClient);
+
+			await myApi.dispatch();
+
+			assertClientSet();
+
+			assert(stubGetByField.calledOnceWithExactly(clientField, clientFieldValue));
 		});
 
 	});
