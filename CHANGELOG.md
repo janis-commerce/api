@@ -5,9 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- `ActiveClient`
+- `Client` injected in `API`
+- `API` getController returns a Controller instance
+
 ### Changed
-- `tests` organization
-- improves in `readme.md`
+- improved `tests` organization
+- improves in `README.md`
 
 ### Fixed
 - `Fetcher` jsdocs

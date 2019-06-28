@@ -15,6 +15,8 @@ npm install @janiscommerce/api
 * **new Dispatcher( object )**
 Construct a Dispatcher with the request information
 
+### Public methods
+
 * async **.dispatch()**
 This method dispatch the api instance.
 Returns an object with `code` and the `body`.
@@ -62,6 +64,8 @@ console.log(response);
 ## API
 You should extend your apis from this module.
 
+### Public methods
+
 * **pathParameters** (*getter*). Returns the path parameters of the request.
 
 * **headers** (*getter*). Returns the the headers of the request.
@@ -80,7 +84,11 @@ You should extend your apis from this module.
 
 * **setBody(body)**. Set the response body.
 
-### How to use the API?
+* **getController(ControllerName)**. Get a Controller instance with client injected.
+
+### How to validate the API Structure (query string or request body)?
+The API Struct is easily validated using [superstruct](https://www.npmjs.com/package/superstruct) (Thank's superstruct :pray:)
+If you want to use this validation, you should add a getter method `struct()`.
 
 ```js
 const { API } = require('@janiscommerce/api');
@@ -96,6 +104,20 @@ class MyApi extends API {
 			name: 'string'
 		};
 	}
+}
+
+module.exports = MyApi;
+
+```
+
+### How to add custom validation for my API?
+The way to add some custom validation is adding a `validate()` method.
+This method is called by `Dispatcher` after validate de Struct.
+
+```js
+const { API } = require('@janiscommerce/api');
+
+class MyApi extends API {
 
 	/**
 	 * Optional method for extra validation
@@ -110,7 +132,18 @@ class MyApi extends API {
 			throw new Error('resource not found'); // this will response a 404 error
 		}
 	}
+}
 
+module.exports = MyApi;
+
+```
+
+### How to process the API and response correctly?
+
+```js
+const { API } = require('@janiscommerce/api');
+
+class MyApi extends API {
 	/**
 	 * Required method for api process
 	 */
@@ -136,4 +169,5 @@ class MyApi extends API {
 }
 
 module.exports = MyApi;
+
 ```
