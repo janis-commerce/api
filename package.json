@@ -1,6 +1,6 @@
 {
   "name": "@janiscommerce/api",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "A package for managing API from any origin",
   "main": "index.js",
   "scripts": {
@@ -25,17 +25,18 @@
   "homepage": "https://github.com/janis-commerce/api#readme",
   "devDependencies": {
     "eslint": "^5.16.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.17.3",
-    "husky": "^2.4.1",
+    "eslint-config-airbnb-base": "^13.2.0",
+    "eslint-plugin-import": "^2.18.0",
+    "husky": "^2.7.0",
     "mocha": "^5.2.0",
     "mock-require": "^3.0.3",
     "nyc": "^14.1.1",
     "sinon": "^7.3.2"
   },
   "dependencies": {
-    "@janiscommerce/active-client": "^1.0.0",
+    "@janiscommerce/active-client": "^1.1.0",
     "@janiscommerce/logger": "^1.1.0",
+    "@janiscommerce/settings": "^1.0.0",
     "lodash": "^4.17.11",
     "superstruct": "^0.6.1"
   }

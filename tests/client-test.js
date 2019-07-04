@@ -9,6 +9,7 @@ const sandbox = require('sinon').createSandbox();
 const mockRequire = require('mock-require');
 
 const ActiveClient = require('@janiscommerce/active-client');
+const Settings = require('@janiscommerce/settings');
 
 const { API, Dispatcher } = require('./..');
 const { Fetcher, Client } = require('./../lib');
@@ -27,7 +28,10 @@ describe('Client', function() {
 
 	let apiClientSetted;
 
-	const mockIdentifiers = config => mockRequire(Client.identifierFilePath, config);
+	const mockIdentifiers = config => {
+		sandbox.stub(Settings, 'get')
+			.returns({ clientIdentifiers: config });
+	};
 
 	const endpoint = 'valid-endpoint/list';
 
@@ -47,11 +51,8 @@ describe('Client', function() {
 		sandbox.restore();
 
 		// for cache cleaning
-		delete Client._identifier; // eslint-disable-line
+		delete Client._identifiers; // eslint-disable-line
 	});
-
-	// para espiar al setter identifierFilePath()...
-	const getSpyIdentifierFilePathGetter = () => sandbox.spy(Client, 'identifierFilePath', ['get']);
 
 	const assertNoClientSet = () => {
 		assert.equal(apiClientSetted, undefined);
@@ -59,6 +60,11 @@ describe('Client', function() {
 
 	const assertClientSet = () => {
 		assert.deepEqual(apiClientSetted, theClient);
+	};
+
+	const assertSettingsCall = () => {
+		sandbox.assert.calledOnce(Settings.get);
+		sandbox.assert.calledWithExactly(Settings.get, 'api');
 	};
 
 	const identifierApiFields = {
@@ -70,27 +76,25 @@ describe('Client', function() {
 	context('when no client config identifier found at all', function() {
 		it('shouldn\'t set client', async function() {
 
-			const spyIdentifierFilePathGetter = getSpyIdentifierFilePathGetter();
+			sandbox.stub(Settings, 'get')
+				.returns(undefined);
 
 			const myApi = new Dispatcher({
 				endpoint: 'api/valid-endpoint'
 			});
 
+			await myApi.dispatch();
+			await myApi.dispatch();
+
 			assertNoClientSet();
-
-			await myApi.dispatch();
-
-			assert.equal(spyIdentifierFilePathGetter.get.callCount, 1);
-
-			await myApi.dispatch();
-
-			assert.equal(spyIdentifierFilePathGetter.get.callCount, 1); // is 1 for identifier cache
+			assertSettingsCall();
 		});
 	});
 
 	context('when bad client config identifier found', function() {
 
 		it('shouldn\'t set client if no \'header\', \'data\' or \'cookie\' configured in identifier', async function() {
+
 			mockIdentifiers({
 				clientField
 			});
@@ -99,9 +103,11 @@ describe('Client', function() {
 				endpoint: 'api/valid-endpoint'
 			});
 
-			assertNoClientSet();
-
 			await myApi.dispatch();
+			await myApi.dispatch();
+
+			assertNoClientSet();
+			assertSettingsCall();
 		});
 
 		Object.keys(identifierApiFields).forEach(identifierFieldType => {
@@ -115,9 +121,11 @@ describe('Client', function() {
 					endpoint: 'api/valid-endpoint'
 				});
 
-				assertNoClientSet();
-
 				await myApi.dispatch();
+				await myApi.dispatch();
+
+				assertNoClientSet();
+				assertSettingsCall();
 			});
 		});
 	});
@@ -137,13 +145,15 @@ describe('Client', function() {
 					endpoint: 'api/valid-endpoint'
 				});
 
-				const stubGetByField = sandbox.stub(ActiveClient, 'getByField');
-
-				assertNoClientSet();
+				sandbox.stub(ActiveClient, 'getByField');
 
 				await myApi.dispatch();
+				await myApi.dispatch();
 
-				assert(stubGetByField.notCalled);
+				assertNoClientSet();
+				assertSettingsCall();
+
+				sandbox.assert.notCalled(ActiveClient.getByField);
 			});
 
 			it(`shouldn't set client if empty ${identifierFieldType} received`, async function() {
@@ -158,13 +168,15 @@ describe('Client', function() {
 					[identifierApiField]: {}
 				});
 
-				const stubGetByField = sandbox.stub(ActiveClient, 'getByField');
-
-				assertNoClientSet();
+				sandbox.stub(ActiveClient, 'getByField');
 
 				await myApi.dispatch();
+				await myApi.dispatch();
 
-				assert(stubGetByField.notCalled);
+				assertNoClientSet();
+				assertSettingsCall();
+
+				sandbox.assert.notCalled(ActiveClient.getByField);
 			});
 
 			it(`shouldn't set client if no expected ${identifierFieldType} received`, async function() {
@@ -181,13 +193,15 @@ describe('Client', function() {
 					}
 				});
 
-				const stubGetByField = sandbox.stub(ActiveClient, 'getByField');
-
-				assertNoClientSet();
+				sandbox.stub(ActiveClient, 'getByField');
 
 				await myApi.dispatch();
+				await myApi.dispatch();
 
-				assert(stubGetByField.notCalled);
+				assertNoClientSet();
+				assertSettingsCall();
+
+				sandbox.assert.notCalled(ActiveClient.getByField);
 			});
 
 			it(`shouldn't set client if ${identifierFieldType} received but no client found by ActiveClient module`, async function() {
@@ -204,14 +218,17 @@ describe('Client', function() {
 					}
 				});
 
-				const stubGetByField = sandbox.stub(ActiveClient, 'getByField')
+				sandbox.stub(ActiveClient, 'getByField')
 					.returns([]);
 
-				assertNoClientSet();
-
+				await myApi.dispatch();
 				await myApi.dispatch();
 
-				assert(stubGetByField.calledOnceWithExactly(clientField, clientFieldValue));
+				assertNoClientSet();
+				assertSettingsCall();
+
+				sandbox.assert.calledTwice(ActiveClient.getByField);
+				sandbox.assert.calledWithExactly(ActiveClient.getByField, clientField, clientFieldValue);
 			});
 
 			it(`should set client if ${identifierFieldType} received and client found by ActiveClient module`, async function() {
@@ -228,14 +245,17 @@ describe('Client', function() {
 					}
 				});
 
-				const stubGetByField = sandbox.stub(ActiveClient, 'getByField')
+				sandbox.stub(ActiveClient, 'getByField')
 					.returns(theClient);
 
 				await myApi.dispatch();
+				await myApi.dispatch();
 
 				assertClientSet();
+				assertSettingsCall();
 
-				assert(stubGetByField.calledOnceWithExactly(clientField, clientFieldValue));
+				sandbox.assert.calledTwice(ActiveClient.getByField);
+				sandbox.assert.calledWithExactly(ActiveClient.getByField, clientField, clientFieldValue);
 			});
 
 		});
@@ -257,14 +277,17 @@ describe('Client', function() {
 				}
 			});
 
-			const stubGetByField = sandbox.stub(ActiveClient, 'getByField')
+			sandbox.stub(ActiveClient, 'getByField')
 				.returns(theClient);
 
 			await myApi.dispatch();
+			await myApi.dispatch();
 
 			assertClientSet();
+			assertSettingsCall();
 
-			assert(stubGetByField.calledOnceWithExactly(clientField, clientFieldValue));
+			sandbox.assert.calledTwice(ActiveClient.getByField);
+			sandbox.assert.calledWithExactly(ActiveClient.getByField, clientField, clientFieldValue);
 		});
 
 	});

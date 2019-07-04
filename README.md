@@ -7,19 +7,55 @@ A package for managing API from any origin.
 
 ## Installation
 
-```
+```bash
 npm install @janiscommerce/api
 ```
 
-## Dispatcher
-* **new Dispatcher( object )**
-Construct a Dispatcher with the request information
+## Client injection
+The module can detect and inject a client. This works with configurable identifiers.
+The api can receive the identifier and an internal model will get an inject the client for you.
+The identifiers can be configurated with the package [Settings](https://www.npmjs.com/package/@janiscommerce/settings) in the key `api.identifiers`.
+
+### Active Client
+For the client injection functionality si required to install the package `active-client`.
+The package `active-client` will get in DB by the field configurated in the identifiers and received in the api.
+For more information see [Active Client](https://www.npmjs.com/package/@janiscommerce/active-client)
+
+### Examples of configuration in **.janiscommercerc.json**
+
+1. In this case `api` will use the *header* 'client' getting in DB using the field **name**
+
+```json
+{
+	"api": {
+		"identifiers": {
+			"header": "client",
+			"clientField": "name"
+		}
+	}
+}
+```
+
+2. In this case `api` will search the client using `client-id` or `client-code` (sent in qs or requestBody), the field in DB is `id` and `code` respectively.
+```json
+{
+	"api": {
+		"identifiers": [{
+			"data": "client-id",
+			"clientField": "id"
+		}, {
+			"data": "client-code",
+			"clientField": "code"
+		}]
+	}
+}
+```
+
 
 ### Public methods
 
-* async **.dispatch()**
-This method dispatch the api instance.
-Returns an object with `code` and the `body`.
+* **.dispatch()** (*async*)
+This method dispatch the api instance. Returns an object with `code` and the `body`.
 
 ## Usage
 
@@ -66,25 +102,35 @@ You should extend your apis from this module.
 
 ### Public methods
 
-* **pathParameters** (*getter*). Returns the path parameters of the request.
+* **pathParameters** (*getter*).
+Returns the path parameters of the request.
 
-* **headers** (*getter*). Returns the the headers of the request.
+* **headers** (*getter*).
+Returns the the headers of the request.
 
-* **cookies** (*getter*). Returns the the cookies of the request.
+* **cookies** (*getter*).
+Returns the the cookies of the request.
 
-* **setCode(code)**. Set a response httpCode. `code` must be a integer.
+* **setCode(code)**.
+Set a response httpCode. `code` must be a integer.
 
-* **setHeader(headerName, headerValue)**. Set an individual response header. `headerName` must be a string.
+* **setHeader(headerName, headerValue)**.
+Set an individual response header. `headerName` must be a string.
 
-* **setHeaders(headers)**. Set response headers. `headers` must be an object with "key-value" headers.
+* **setHeaders(headers)**.
+Set response headers. `headers` must be an object with "key-value" headers.
 
-* **setCookie(cookieName, cookieValue)**. Set an individual response cookie. `cookieName` must be a string.
+* **setCookie(cookieName, cookieValue)**.
+Set an individual response cookie. `cookieName` must be a string.
 
-* **setCookies(cookies)**. Set response cookies. `cookies` must be an object with "key-value" cookies.
+* **setCookies(cookies)**.
+Set response cookies. `cookies` must be an object with "key-value" cookies.
 
-* **setBody(body)**. Set the response body.
+* **setBody(body)**.
+Set the response body.
 
-* **getController(ControllerName)**. Get a Controller instance with client injected.
+* **getController(ControllerName)**.
+Get a Controller instance with client injected.
 
 ### How to validate the API Structure (query string or request body)?
 The API Struct is easily validated using [superstruct](https://www.npmjs.com/package/superstruct) (Thank's superstruct :pray:)
