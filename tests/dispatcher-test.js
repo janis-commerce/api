@@ -124,7 +124,7 @@ describe('Dispatcher', function() {
 		mockRequire(path.join(Fetcher.apiPath, endpoint), classContent);
 	};
 
-	before(() => {
+	beforeEach(() => {
 		mock('invalid-api-class-endpoint/list', NoClass);
 		mock('invalid-api-inheritance/list', NoApiInheritance);
 		mock('no-process-endpoint/list', NoProcess);
@@ -141,7 +141,8 @@ describe('Dispatcher', function() {
 		mock('valid-endpoint/get', ValidProcess);
 	});
 
-	after(() => {
+	afterEach(() => {
+		delete process.env.MS_PATH;
 		mockRequire.stopAll();
 	});
 
@@ -387,6 +388,17 @@ describe('Dispatcher', function() {
 			await test({
 				endpoint: 'api/valid-endpoint'
 			}, 200, {}, { 'valid-cookie': 123 });
+		});
+
+		it('should found api when using a prefix with ENV MS_PATH', async function() {
+
+			process.env.MS_PATH = 'my-custom-prefix';
+
+			mock('valid-with-prefix-endpoint/list', ValidProcess, 'my-custom-prefix');
+
+			await test({
+				endpoint: 'api/valid-with-prefix-endpoint'
+			}, 200);
 		});
 
 	});

@@ -33,20 +33,21 @@ describe('API - Controller helpers', function() {
 
 	it('should throw an Error when Controller not found the controller', function() {
 
-		const stubController = sandbox.stub(FakeControllerModule, 'getInstance')
+		sandbox.stub(FakeControllerModule, 'getInstance')
 			.throws(new Error('invalid controller'));
 
 		mockRequire(Controller.moduleFilePath, { Controller: FakeControllerModule });
 
 		assert.throws(() => myApi.getController('foo-controller'));
 
-		assert(stubController.calledOnceWithExactly('foo-controller'));
+		sandbox.assert.calledOnce(FakeControllerModule.getInstance);
+		sandbox.assert.calledWithExactly(FakeControllerModule.getInstance, 'foo-controller');
 	});
 
 	context('when Controller module found the controller', function() {
 		it('should return controller without client if client', function() {
 
-			const stubController = sandbox.stub(FakeControllerModule, 'getInstance')
+			sandbox.stub(FakeControllerModule, 'getInstance')
 				.returns({ foo: 'bar' });
 
 			mockRequire(Controller.moduleFilePath, { Controller: FakeControllerModule });
@@ -55,14 +56,15 @@ describe('API - Controller helpers', function() {
 
 			assert.deepEqual(fooController, { foo: 'bar' });
 
-			assert(stubController.calledOnceWithExactly('foo-controller'));
+			sandbox.assert.calledOnce(FakeControllerModule.getInstance);
+			sandbox.assert.calledWithExactly(FakeControllerModule.getInstance, 'foo-controller');
 
 			const againFooController = myApi.getController('foo-controller');
 
 			assert.deepEqual(againFooController, { foo: 'bar' });
 
-			assert(stubController.calledTwice);
-			assert.deepEqual(stubController.getCall(1).args, ['foo-controller']);
+			sandbox.assert.calledTwice(FakeControllerModule.getInstance);
+			sandbox.assert.alwaysCalledWith(FakeControllerModule.getInstance, 'foo-controller');
 		});
 
 		it('should return controller with client if client present in api', function() {
@@ -72,7 +74,7 @@ describe('API - Controller helpers', function() {
 				name: 'client-name'
 			};
 
-			const stubController = sandbox.stub(FakeControllerModule, 'getInstance')
+			sandbox.stub(FakeControllerModule, 'getInstance')
 				.returns({ foo: 'bar' });
 
 			mockRequire(Controller.moduleFilePath, { Controller: FakeControllerModule });
@@ -81,14 +83,15 @@ describe('API - Controller helpers', function() {
 
 			assert.deepEqual(fooController, { foo: 'bar', client: myApi.client });
 
-			assert(stubController.calledOnceWithExactly('foo-controller'));
+			sandbox.assert.calledOnce(FakeControllerModule.getInstance);
+			sandbox.assert.calledWithExactly(FakeControllerModule.getInstance, 'foo-controller');
 
 			const againFooController = myApi.getController('foo-controller');
 
 			assert.deepEqual(againFooController, { foo: 'bar', client: myApi.client });
 
-			assert(stubController.calledTwice);
-			assert.deepEqual(stubController.getCall(1).args, ['foo-controller']);
+			sandbox.assert.calledTwice(FakeControllerModule.getInstance);
+			sandbox.assert.alwaysCalledWith(FakeControllerModule.getInstance, 'foo-controller');
 		});
 	});
 
