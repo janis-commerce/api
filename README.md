@@ -129,8 +129,8 @@ Set response cookies. `cookies` must be an object with "key-value" cookies.
 * **setBody(body)**.
 Set the response body.
 
-* **getController(ControllerName)**.
-Get a Controller instance with client injected.
+* **getInstance(ModuleClass)**.
+Get a module instance with client injected.
 
 ### How to validate the API Structure (query string or request body)?
 The API Struct is easily validated using [superstruct](https://www.npmjs.com/package/superstruct) (Thank's superstruct :pray:)
@@ -216,4 +216,27 @@ class MyApi extends API {
 
 module.exports = MyApi;
 
+```
+
+### How to obtain a model instance with client injected
+Is required to configure the api-identifiers and receive it in the API, see de `Client injection` and `Active Client` sections first.
+
+```js
+const { API } = require('@janiscommerce/api');
+const PetModel = require('/path/to/models/pet');
+
+class MyApi extends API {
+	/**
+	 * Required method for api process
+	 */
+	async process() {
+
+		const petModel = this.getInstance(PetModel);
+		const petId = await petModel.save(this.data);
+
+		this.setBody({ petId });
+	}
+}
+
+module.exports = MyApi;
 ```
