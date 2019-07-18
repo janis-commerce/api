@@ -1,6 +1,6 @@
 {
   "name": "@janiscommerce/api",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "A package for managing API from any origin",
   "main": "index.js",
   "scripts": {
@@ -36,8 +36,8 @@
   "dependencies": {
     "@janiscommerce/active-client": "^1.2.0",
     "@janiscommerce/logger": "^1.1.0",
-    "@janiscommerce/settings": "^1.0.0",
-    "lodash": "^4.17.11",
+    "@janiscommerce/settings": "^1.0.1",
+    "lodash": "^4.17.14",
     "superstruct": "^0.6.1"
   }
 }

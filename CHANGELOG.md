@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Updated `active-client` package for having getInstance
 
+## [2.0.1] - 2019-07-18
+### Fixed
+- Dependencies updated
+
 ## [2.0.0] - 2019-07-15
 ### Added
 - `API base` - getInstance helper for propagate client
