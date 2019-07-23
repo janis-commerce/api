@@ -333,7 +333,7 @@ describe('Dispatcher', function() {
 		it('should return api requestData with getters', async function() {
 
 			extraProcess = api => {
-				assert.deepEqual(api.endpoint, 'api/valid-endpoint/10');
+				assert.deepEqual(api.endpoint, 'valid-endpoint/10');
 				assert.deepEqual(api.pathParameters, ['10']);
 				assert.deepEqual(api.headers, { 'my-header': 'foo' });
 				assert.deepEqual(api.cookies, { 'my-cookie': 'bar' });
