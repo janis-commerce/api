@@ -258,6 +258,33 @@ describe('Client', function() {
 				sandbox.assert.calledWithExactly(ActiveClient.getByField, clientField, clientFieldValue);
 			});
 
+			it(`should set client if ${identifierFieldType} received and client found by ActiveClient module - case insensitive`, async function() {
+
+				mockIdentifiers({
+					[identifierFieldType]: 'clientId',
+					clientField
+				});
+
+				const myApi = new Dispatcher({
+					endpoint: 'api/valid-endpoint',
+					[identifierApiField]: {
+						CLIENTID: clientFieldValue
+					}
+				});
+
+				sandbox.stub(ActiveClient, 'getByField')
+					.returns(theClient);
+
+				await myApi.dispatch();
+				await myApi.dispatch();
+
+				assertClientSet();
+				assertSettingsCall();
+
+				sandbox.assert.calledTwice(ActiveClient.getByField);
+				sandbox.assert.calledWithExactly(ActiveClient.getByField, clientField, clientFieldValue);
+			});
+
 		});
 
 		it('should set client if header received and client found by ActiveClient module with multiple identifiers', async function() {
