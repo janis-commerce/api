@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- Client injection changed to API Session injection (**BREAKING CHANGE**)
+- Settings changed due to @janiscommerce/api-session package (**BREAKING CHANGE**)
+- Logger changed to the zero-dependency lllog
+
+### Added
+- Now `APIError` can wrap a previous error
+
 ## [3.2.0] - 2019-08-02
 ### Changed
 - Client Identifiers now works case insensitive
