@@ -274,3 +274,19 @@ const dispatcher = new Dispatcher({
 
 const response = await dispatcher.dispatch();
 ```
+
+## Serverless, REST APIs and unit testing
+
+To implement predictable REST APIs, there are a couple packages that extend this one:
+
+* [List APIs](https://www.npmjs.com/package/@janiscommerce/api-list): To implement resource listing APIs, with standarized sorting, pagination, filtering and responses.
+* [Get APIs](https://www.npmjs.com/package/@janiscommerce/api-get): To implement one-resource get APIs with ease.
+* [Save APIs](https://www.npmjs.com/package/@janiscommerce/api-save): To implement one-resource create/update APIs with ease, with standarized validation and
+
+To implement this on serverless, there is a REST API handler that can be used out-of-the-box:
+
+* [Serverless REST API](https://www.npmjs.com/package/@janiscommerce/sls-api-rest): To implement API dispatching in AWS Api Gateway + Lambda with ease.
+
+To implement unit tests in your APIs, there is a also a package:
+
+* [API Test](https://www.npmjs.com/package/@janiscommerce/api-test): To run unit tests on your APIs like a boss.
