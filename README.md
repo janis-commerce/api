@@ -165,6 +165,35 @@ class MyApi extends API {
 module.exports = MyApi;
 ```
 
+### API with struct with defaults
+
+```js
+'use strict';
+
+const { API } = require('@janiscommerce/api');
+
+class MyApi extends API {
+
+	get struct() {
+		return [{
+			foo: 'string?'
+		}, {
+			// Defaults
+			foo: 'bar'
+		}];
+	}
+
+	async process() {
+		this.setBody({
+			message: 'Success'
+		});
+	}
+
+}
+
+module.exports = MyApi;
+```
+
 ### API with custom validation http status
 
 ```js
