@@ -5,8 +5,8 @@ const mockRequire = require('mock-require');
 
 const assert = require('assert');
 
-const { API, Dispatcher } = require('./..');
-const { APIError, Fetcher } = require('./../lib');
+const { API, APIError, Dispatcher } = require('../lib');
+const Fetcher = require('../lib/fetcher');
 
 /* eslint-disable prefer-arrow-callback */
 
@@ -215,12 +215,6 @@ describe('Dispatcher', function() {
 
 	context('5xx errors', function() {
 
-		it('should return code 500 when api file not found', async function() {
-			await test({
-				endpoint: 'api/unknown-endpoint'
-			}, 500);
-		});
-
 		it('should return code 500 when api file hasn\'t a class', async function() {
 			await test({
 				endpoint: 'api/invalid-api-class-endpoint'
@@ -265,6 +259,12 @@ describe('Dispatcher', function() {
 	});
 
 	context('4xx errors', function() {
+
+		it('should return code 404 when api file not found', async function() {
+			await test({
+				endpoint: 'api/unknown-endpoint'
+			}, 404);
+		});
 
 		it('should return code 400 when api validate method throw a data invalid', async function() {
 			await test({

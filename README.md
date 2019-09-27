@@ -5,114 +5,48 @@
 
 A package for managing API from any origin.
 
+
 ## Installation
 
 ```bash
 npm install @janiscommerce/api
 ```
 
-## Client injection
-The module can detect and inject a client. This works with configurable identifiers.
-The api can receive the identifier and an internal model will get an inject the client for you.
-The identifiers can be configurated with the package [Settings](https://www.npmjs.com/package/@janiscommerce/settings) in the key `api.identifiers`.
-
-### Active Client
-For the client injection functionality si required to install the package `active-client`.
-The package `active-client` will get in DB by the field configurated in the identifiers and received in the api.
-For more information see [Active Client](https://www.npmjs.com/package/@janiscommerce/active-client)
-
-### Examples of configuration in **.janiscommercerc.json**
-
-1. In this case `api` will use the *header* 'client' getting in DB using the field **name**
-
-```json
-{
-	"api": {
-		"identifiers": {
-			"header": "client",
-			"clientField": "name"
-		}
-	}
-}
-```
-
-2. In this case `api` will search the client using `client-id` or `client-code` (sent in qs or requestBody), the field in DB is `id` and `code` respectively.
-```json
-{
-	"api": {
-		"identifiers": [{
-			"data": "client-id",
-			"clientField": "id"
-		}, {
-			"data": "client-code",
-			"clientField": "code"
-		}]
-	}
-}
-```
-
-
-### Public methods
-
-* **.dispatch()** (*async*)
-This method dispatch the api instance. Returns an object with `code` and the `body`.
-
-## Usage
-
-### How to dispatch an API? (from a server)
-
-```js
-const { Dispatcher } = require('@janiscommerce/api');
-
-const dispatcher = new Dispatcher({
-	endpoint: 'api/pets',
-	method: 'get', // this is the default verb
-	data: { status: 'active' },
-	headers: { 'Content-Type': 'application/json' },
-	cookies: { 'my-cookie': 123 }
-});
-
-const response = await dispatcher.dispatch();
-
-console.log(response);
-/**
-	expected output:
-
-	{
-		code: 200,
-		body: [
-			{
-				id: 1,
-				type: 'dog',
-				breed: 'pug',
-				name: 'Batman'
-			}, {
-				id: 2,
-				type: 'dog',
-				breed: 'chihuahua',
-				name: 'Chico'
-			}
-		]
-	}
-*/
-```
 
 ## API
-You should extend your apis from this module.
 
-### Public methods
+This is the class you should extend to code your own APIs. You can customize them with the following methods and getters:
+
+### get struct()
+This optional getter should return a valid [struct](https://www.npmjs.com/package/superstruct). If it doesn't match the data, default http code is set to 400.
+
+**IMPORTANT** In case you return an array, each element will be passed as an argument to struct validation (see examples below). To validate an array, use `struct.list()` instead.
+
+### async validate()
+This optional method should throw an Error in case of validation failure. It's message will be set in the response body. It's return value will be discarded.
+
+### async process()
+This method is required, and should have the logic of your API. At this point, request should be already validated. If you throw an error here, default http code is set to 500.
+
+The following methods will be inherited from the base API Class:
+
+### Getters
 
 * **pathParameters** (*getter*).
-Returns the path parameters of the request.
+Returns the path parameters of the request as an array of values. For example: /store/10/schedules will generate the following path parameters: ['10']
 
 * **headers** (*getter*).
-Returns the the headers of the request.
+Returns the the headers of the request as a key-value object.
 
 * **cookies** (*getter*).
-Returns the the cookies of the request.
+Returns the the cookies of the request as a key-value object.
+
+### Setters
+
+All this setters are chainable!
 
 * **setCode(code)**.
-Set a response httpCode. `code` must be a integer.
+Set a response httpCode. `code` must be a integer. This will prevent default http codes to be set.
 
 * **setHeader(headerName, headerValue)**.
 Set an individual response header. `headerName` must be a string.
@@ -129,114 +63,183 @@ Set response cookies. `cookies` must be an object with "key-value" cookies.
 * **setBody(body)**.
 Set the response body.
 
-* **getInstance(ModuleClass)**.
-Get a module instance with client injected.
 
-### How to validate the API Structure (query string or request body)?
-The API Struct is easily validated using [superstruct](https://www.npmjs.com/package/superstruct) (Thank's superstruct :pray:)
-If you want to use this validation, you should add a getter method `struct()`.
+## Dispatcher
+
+This is the class you should use to dispatch your APIs. It takes the request data as constructor arguments and then finds you API file based on the endpoint and executes it.
+
+### constructor(request)
+The request must be an object and can be setup using the following properties:
+
+* endpoint {string} **required** The API endpoint called
+* method {string} The HTTP Method used in the request. Default: `'get'`.
+* data {mixed} The data received in the API (query string or request body). Default: `{}`.
+* headers {object} A key-value object containing the request headers. Default: `{}`.
+* cookies {object} A key-value object containing the request cookies. Default: `{}`.
+* authenticationData {object} An object containing the request authentication data (see [Session injection](#session-injection)). Default: `{}`.
+
+### async dispatch()
+This will dispatch the API. It resolves to an object with the API execution result, with the following properties:
+
+* code {number} The return http code. Default: `200`.
+* body {mixed} The response body
+* headers {object} A key-value object containing the response headers
+* cookies {object} A key-value object containing the response cookies
+
+
+## APIError
+
+Every error handled by this package will be an instance of this class. You might find more information about the error source in the `previousError` property.
+
+It also uses the following error codes:
+
+| Name | Value | Description |
+| --- | --- | --- |
+| Invalid request data | 1 | The request parameters received are not an object |
+| Invalid endpoint | 2 | The request endpoint received is not a string |
+| Invalid method | 3 | The request method received is not a string |
+| Invalid headers | 4 | The request headers received are not an object |
+| Invalid cookies | 5 | The request cookies received are not an object |
+| API not found | 6 | The endpoint does not correspond to an API file. This sets the default http code to 404 |
+| Invalid API | 7 | The API does not inherit from API class |
+| Invalid struct | 8 | The request data does not match the API struct |
+| Invalid authentication data | 9 | The request authentication data received is not an object |
+
+
+## Session injection
+This package implements [API Session](https://www.npmjs.com/package/@janiscommerce/api-session). In order to associate a request to a session, you must pass a valid authentication data in the `authenticationData` property of the Dispatcher constructor.
+
+Session details and customization details can be found in api-session README.
+
+
+## API Examples
+
+### Basic API
 
 ```js
+'use strict';
+
 const { API } = require('@janiscommerce/api');
 
 class MyApi extends API {
 
-	/**
-	 * Optional method for struct validation (qs or requestBody)
-	 */
+	async process() {
+		this.setBody({
+			message: 'Success'
+		});
+	}
+
+}
+
+module.exports = MyApi;
+```
+
+### API with struct and custom validation
+
+```js
+'use strict';
+
+const { API } = require('@janiscommerce/api');
+
+class MyApi extends API {
+
 	get struct() {
 		return {
-			id: 'number',
-			name: 'string'
+			foo: 'string'
 		};
 	}
+
+	async validate() {
+		if(!this.data.foo.match(/(bar)+/))
+			throw new Error('Foo must be one or more bars');
+	}
+
+	async process() {
+		this.setBody({
+			message: 'Success'
+		});
+	}
+
 }
 
 module.exports = MyApi;
-
 ```
 
-### How to add custom validation for my API?
-The way to add some custom validation is adding a `validate()` method.
-This method is called by `Dispatcher` after validate de Struct.
+### API with custom validation http status
 
 ```js
+'use strict';
+
 const { API } = require('@janiscommerce/api');
+
+const UserValidator = require('user-validator');
 
 class MyApi extends API {
 
-	/**
-	 * Optional method for extra validation
-	 */
+	get struct() {
+		return {
+			userId: 'number'
+		};
+	}
+
 	async validate() {
-
-		if(this.data.id > 10)
-			throw new Error('Weird validation fail'); // this will response a 400 error
-
-		if(!existsInMyDB(this.data.id)) {
-			this.setCode(404); // set a custom http resposne code
-			throw new Error('resource not found'); // this will response a 404 error
+		if(!UserValidator.isValidId(this.data.userId)) {
+			this.setCode(401);
+			throw new Error('Unauthorized');
 		}
 	}
+
+	async process() {
+		this.setBody({
+			message: 'Success'
+		});
+	}
+
 }
 
 module.exports = MyApi;
-
 ```
 
-### How to process the API and response correctly?
+### API with custom response http code and headers
 
 ```js
+'use strict';
+
 const { API } = require('@janiscommerce/api');
 
 class MyApi extends API {
-	/**
-	 * Required method for api process
-	 */
+
 	async process() {
-
-		if(!saveInMyDB(this.data))
-			throw new Error('internal save error'); // this will response a 500 error
-
-		if(!saveOtherThingInMyDB(this.data)) {
-			this.setCode(504); // set a custom http resposne code
-			throw new Error('internal save error');
-		}
-
 		this
-			.setHeader('my-header-1', 'foo')
-			.setHeaders({ 'my-header-2': 'foo', 'my-header-3': 'foo' })
-			.setCookie('my-cookie-1', 'bar')
-			.setCookies({ 'my-cookie-2': 'bar', 'my-cookie-3': 'bar' })
+			.setHeader('x-foo', 'bar')
+			.setCode(201)
 			.setBody({
-				'response-body': 123
+				message: 'Created'
 			});
 	}
+
 }
 
 module.exports = MyApi;
-
 ```
 
-### How to obtain a model instance with client injected
-Is required to configure the api-identifiers and receive it in the API, see de `Client injection` and `Active Client` sections first.
+## Dispatcher Examples
+
+### Full request dispatcher
 
 ```js
-const { API } = require('@janiscommerce/api');
-const PetModel = require('/path/to/models/pet');
+'use strict';
 
-class MyApi extends API {
-	/**
-	 * Required method for api process
-	 */
-	async process() {
+const { Dispatcher } = require('@janiscommerce/api');
 
-		const petModel = this.getInstance(PetModel);
-		const petId = await petModel.save(this.data);
+const dispatcher = new Dispatcher({
+	endpoint: 'store/10/schedules',
+	method: 'get',
+	data: { status: 'active' },
+	headers: { 'Content-Type': 'application/json' },
+	cookies: { 'my-cookie': 'cookie-value' },
+	authenticationData: { userId: 10, clientCode: 'janiscommerce'}
+});
 
-		this.setBody({ petId });
-	}
-}
-
-module.exports = MyApi;
+const response = await dispatcher.dispatch();
 ```
