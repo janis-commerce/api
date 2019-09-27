@@ -107,6 +107,8 @@ It also uses the following error codes:
 
 
 ## Session injection
+*Since 2.0.0*
+
 This package implements [API Session](https://www.npmjs.com/package/@janiscommerce/api-session). In order to associate a request to a session, you must pass a valid authentication data in the `authenticationData` property of the Dispatcher constructor.
 
 Session details and customization details can be found in api-session README.
