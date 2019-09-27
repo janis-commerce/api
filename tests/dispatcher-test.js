@@ -150,9 +150,9 @@ describe('Dispatcher', function() {
 		const myApi = new Dispatcher(myApiData);
 		const result = await myApi.dispatch();
 
-		assert.deepEqual(result.code, code, `Error in expected response HTTP Code ${code} !== ${result.code}`);
-		assert.deepEqual(result.headers, headers, 'Error in expected response headers');
-		assert.deepEqual(result.cookies, cookies, 'Error in expected response cookies');
+		assert.deepStrictEqual(result.code, code, `Error in expected response HTTP Code ${code} !== ${result.code}`);
+		assert.deepStrictEqual(result.headers, headers, 'Error in expected response headers');
+		assert.deepStrictEqual(result.cookies, cookies, 'Error in expected response cookies');
 	};
 
 	context('invalid data received', function() {
@@ -205,6 +205,11 @@ describe('Dispatcher', function() {
 		it('should reject when invalid cookies given', function() {
 			const endpoint = 'valid/endpoint';
 			noObjects.forEach(cookies => testConstructorReject(APIError.codes.INVALID_COOKIES, { endpoint, cookies }));
+		});
+
+		it('should reject when invalid authentication data given', function() {
+			const endpoint = 'valid/endpoint';
+			noObjects.forEach(authenticationData => testConstructorReject(APIError.codes.INVALID_AUTHENTICATION_DATA, { endpoint, authenticationData }));
 		});
 	});
 
@@ -333,16 +338,19 @@ describe('Dispatcher', function() {
 		it('should return api requestData with getters', async function() {
 
 			extraProcess = api => {
-				assert.deepEqual(api.endpoint, 'valid-endpoint/10');
-				assert.deepEqual(api.pathParameters, ['10']);
-				assert.deepEqual(api.headers, { 'my-header': 'foo' });
-				assert.deepEqual(api.cookies, { 'my-cookie': 'bar' });
+
+				assert.deepStrictEqual(api.endpoint, 'valid-endpoint/10');
+				assert.deepStrictEqual(api.pathParameters, ['10']);
+				assert.deepStrictEqual(api.headers, { 'my-header': 'foo' });
+				assert.deepStrictEqual(api.cookies, { 'my-cookie': 'bar' });
+				assert.deepStrictEqual(api.session.clientCode, 'fizzmod');
 			};
 
 			await test({
 				endpoint: 'api/valid-endpoint/10',
 				headers: { 'my-header': 'foo' },
-				cookies: { 'my-cookie': 'bar' }
+				cookies: { 'my-cookie': 'bar' },
+				authenticationData: { clientCode: 'fizzmod' }
 			}, 200);
 		});
 

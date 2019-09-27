@@ -34,10 +34,9 @@
     "sinon": "^7.3.2"
   },
   "dependencies": {
-    "@janiscommerce/active-client": "^1.2.0",
-    "@janiscommerce/logger": "^1.1.0",
+    "@janiscommerce/api-session": "^1.0.0",
     "@janiscommerce/settings": "^1.0.1",
-    "lodash": "^4.17.14",
+    "lllog": "^1.1.2",
     "superstruct": "^0.6.1"
   }
 }
