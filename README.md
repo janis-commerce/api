@@ -101,7 +101,7 @@ It also uses the following error codes:
 | Invalid headers | 4 | The request headers received are not an object |
 | Invalid cookies | 5 | The request cookies received are not an object |
 | API not found | 6 | The endpoint does not correspond to an API file. This sets the default http code to 404 |
-| Invalid API | 7 | The API does not inherit from API class |
+| Invalid API | 7 | The API does not inherit from API class or does not implement the `process` method |
 | Invalid struct | 8 | The request data does not match the API struct |
 | Invalid authentication data | 9 | The request authentication data received is not an object |
 

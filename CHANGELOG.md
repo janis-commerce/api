@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Client injection changed to API Session injection (**BREAKING CHANGE**)
 - Settings changed due to @janiscommerce/api-session package (**BREAKING CHANGE**)
-- Logger changed to the zero-dependency lllog
+
+### Removed
+- Logger is not a dependency any more
 
 ### Added
 - Now `APIError` can wrap a previous error
