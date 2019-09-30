@@ -269,7 +269,7 @@ const dispatcher = new Dispatcher({
 	data: { status: 'active' },
 	headers: { 'Content-Type': 'application/json' },
 	cookies: { 'my-cookie': 'cookie-value' },
-	authenticationData: { userId: 10, clientCode: 'janiscommerce'}
+	authenticationData: { userId: 10, clientCode: 'janiscommerce' }
 });
 
 const response = await dispatcher.dispatch();
