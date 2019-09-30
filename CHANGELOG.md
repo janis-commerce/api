@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - Now `APIError` can wrap a previous error
+- API Controllers cache in fetcher
 
 ## [3.2.0] - 2019-08-02
 ### Changed
