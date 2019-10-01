@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [4.1.0] - 2019-10-01
+### Changed
+- API Session updated to provide `getSessionInstance` method
+
 ## [4.0.0] - 2019-10-01
 ### Changed
 - Client injection changed to API Session injection (**BREAKING CHANGE**)
