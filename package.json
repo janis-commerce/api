@@ -1,6 +1,6 @@
 {
   "name": "@janiscommerce/api",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "description": "A package for managing API from any origin",
   "main": "lib/index.js",
   "scripts": {
@@ -34,8 +34,7 @@
     "sinon": "^7.3.2"
   },
   "dependencies": {
-    "@janiscommerce/api-session": "^1.1.0",
-    "@janiscommerce/settings": "^1.0.1",
+    "@janiscommerce/api-session": "^1.2.0",
     "superstruct": "^0.6.1"
   }
 }

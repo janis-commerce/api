@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [4.1.1] - 2019-10-01
+### Changed
+- Model version updated to avoid dependency versions issues
+
 ## [4.1.0] - 2019-10-01
 ### Changed
 - API Session updated to provide `getSessionInstance` method
