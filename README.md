@@ -254,6 +254,44 @@ class MyApi extends API {
 module.exports = MyApi;
 ```
 
+### API injected session
+
+```js
+'use strict';
+
+const { API } = require('@janiscommerce/api');
+
+const UserValidator = require('user-validator');
+
+class MyApi extends API {
+
+	get struct() {
+		return {
+			userId: 'number'
+		};
+	}
+
+	async validate() {
+
+		const userValidator = this.session.getSessionInstance(UserValidator);
+
+		if(!userValidator.isValidId(this.data.userId)) {
+			this.setCode(401);
+			throw new Error('Unauthorized');
+		}
+	}
+
+	async process() {
+		this.setBody({
+			message: 'Success'
+		});
+	}
+
+}
+
+module.exports = MyApi;
+```
+
 ## Dispatcher Examples
 
 ### Full request dispatcher

@@ -34,7 +34,7 @@
     "sinon": "^7.3.2"
   },
   "dependencies": {
-    "@janiscommerce/api-session": "^1.0.0",
+    "@janiscommerce/api-session": "^1.1.0",
     "@janiscommerce/settings": "^1.0.1",
     "superstruct": "^0.6.1"
   }
