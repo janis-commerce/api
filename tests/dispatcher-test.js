@@ -4,6 +4,9 @@ const path = require('path');
 const mockRequire = require('mock-require');
 
 const assert = require('assert');
+const sandbox = require('sinon').createSandbox();
+
+const Log = require('@janiscommerce/log');
 
 const { API, APIError, Dispatcher } = require('../lib');
 const Fetcher = require('../lib/fetcher');
@@ -139,11 +142,13 @@ describe('Dispatcher', function() {
 		mock('validate-correctly-endpoint/list', ValidateOk);
 		mock('valid-endpoint/list', ValidProcess);
 		mock('valid-endpoint/get', ValidProcess);
+		sandbox.stub(Log, 'add');
 	});
 
 	afterEach(() => {
 		delete process.env.MS_PATH;
 		mockRequire.stopAll();
+		sandbox.restore();
 	});
 
 	const test = async (myApiData, code, headers = {}, cookies = {}) => {
