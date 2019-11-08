@@ -41,6 +41,21 @@ Returns the the headers of the request as a key-value object.
 * **cookies** (*getter*).
 Returns the the cookies of the request as a key-value object.
 
+* **shouldCreateLog(*getter*)**.
+Returns if the api execution should be logged as a boolean.
+
+* **shouldLogRequestData(*getter*)**.
+Returns if the api request data should be logged as a boolean.
+
+* **shouldLogRequestHeaders(*getter*)**.
+Returns if the api response data should be logged as a boolean.
+
+* **excludeFieldsLogRequestData(*getter*)**.
+Returns the fields to exclude from the api request data that will be logged as an array.
+
+* **excludeFieldsLogResponseBody(*getter*)**.
+Returns the fields to exclude from the api response body that will be logged as an array.
+
 ### Setters
 
 All this setters are chainable!
@@ -62,6 +77,21 @@ Set response cookies. `cookies` must be an object with "key-value" cookies.
 
 * **setBody(body)**.
 Set the response body.
+
+* **shouldCreateLog(bool)**.
+Set if the api execution should be logged. `true` by default except for `get` http methods.
+
+* **shouldLogRequestData(bool)**.
+Set if the api request data should be logged. `true` by default.
+
+* **shouldLogRequestHeaders(bool)**.
+Set if the api response data should be logged. `true` by default.
+
+* **excludeFieldsLogRequestData(fields)**.
+Set the fields to exclude from the api request data that will be logged. `fields` should be an array.
+
+* **excludeFieldsLogResponseBody(fields)**.
+Set the fields to exclude from the api response body that will be logged. `fields` should be an array.
 
 
 ## Dispatcher

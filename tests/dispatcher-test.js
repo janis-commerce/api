@@ -417,4 +417,176 @@ describe('Dispatcher', function() {
 
 	});
 
+	context('when an api request is executed', function() {
+
+		const defaultApi = {
+			endpoint: 'api/valid-endpoint',
+			headers: {
+				'janis-api-key': 'foo',
+				'janis-api-secret': 'bar',
+				'my-header': 'sarasa'
+			},
+			data: { some: 'data' },
+			authenticationData: { clientCode: 'fizzmod' }
+		};
+
+		it('should log the api request', async () => {
+
+			extraProcess = api => {
+				api.shouldCreateLog = true;
+			};
+
+			responseBody = { message: 'ok' };
+			responseHeaders = { 'res-header': 'some-data' };
+
+			await test({
+				...defaultApi,
+				endpoint: 'api/valid-endpoint/10'
+			}, 200, responseHeaders);
+
+			sandbox.assert.calledWithMatch(Log.add, 'fizzmod', {
+				entity: 'api',
+				entityId: 'valid-endpoint',
+				type: 'api-request',
+				log: {
+					api: {
+						endpoint: 'valid-endpoint/10',
+						httpMethod: 'get'
+					},
+					request: {
+						headers: {
+							'my-header': 'sarasa'
+						},
+						data: { some: 'data' }
+					},
+					response: {
+						code: 200,
+						headers: responseHeaders,
+						body: responseBody
+					},
+					executionTime: sandbox.match.number
+				}
+			});
+		});
+
+		it('should log the request without request data, headers and response body', async function() {
+
+			extraProcess = api => {
+
+				api.shouldCreateLog = true;
+				api.shouldLogRequestData = false;
+				api.shouldLogRequestHeaders = false;
+				api.shouldLogResponseBody = false;
+			};
+
+			responseBody = { message: 'ok' };
+
+			await test(defaultApi, 200);
+
+			sandbox.assert.calledWithMatch(Log.add, 'fizzmod', {
+				entity: 'api',
+				entityId: 'valid-endpoint',
+				type: 'api-request',
+				log: {
+					api: {
+						endpoint: 'valid-endpoint',
+						httpMethod: 'get'
+					},
+					request: {},
+					response: {
+						code: 200
+					},
+					executionTime: sandbox.match.number
+				}
+			});
+		});
+
+		it('should log the request exlcuding the specified fields of request data and response body', async function() {
+
+			extraProcess = api => {
+
+				api.shouldCreateLog = true;
+
+				api.excludeFieldsLogRequestData = [
+					'password',
+					'address'
+				];
+
+				api.excludeFieldsLogResponseBody = [
+					'password',
+					'secretCode'
+				];
+			};
+
+			responseBody = {
+				message: 'ok',
+				password: 'foobar',
+				authData: {
+					secretCode: 1,
+					publicCode: 2
+				}
+			};
+
+			await test({
+				...defaultApi,
+				data: {
+					some: 'data',
+					password: 'foobar',
+					location: {
+						address: 'Fake St. 123',
+						country: 'AR'
+					}
+				}
+			}, 200);
+
+			sandbox.assert.calledWithMatch(Log.add, 'fizzmod', {
+				entity: 'api',
+				entityId: 'valid-endpoint',
+				type: 'api-request',
+				log: {
+					api: {
+						endpoint: 'valid-endpoint',
+						httpMethod: 'get'
+					},
+					request: {
+						data: {
+							some: 'data',
+							password: sandbox.match.undefined,
+							location: {
+								address: sandbox.match.undefined,
+								country: 'AR'
+							}
+						}
+					},
+					response: {
+						code: 200,
+						body: {
+							message: 'ok',
+							password: sandbox.match.undefined,
+							authData: {
+								secretCode: sandbox.match.undefined,
+								publicCode: 2
+							}
+						}
+					},
+					executionTime: sandbox.match.number
+				}
+			});
+		});
+
+		it('should not log the api request with get method when api.shouldCreateLog is not set', async function() {
+			await test(defaultApi, 200);
+			sandbox.assert.notCalled(Log.add);
+		});
+
+		it('should not log the api request when api.shouldCreateLog is false', async function() {
+
+			extraProcess = api => {
+				api.shouldCreateLog = false;
+			};
+
+			await test(defaultApi, 200);
+			sandbox.assert.notCalled(Log.add);
+		});
+	});
 });
