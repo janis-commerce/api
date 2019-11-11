@@ -78,22 +78,6 @@ Set response cookies. `cookies` must be an object with "key-value" cookies.
 * **setBody(body)**.
 Set the response body.
 
-* **shouldCreateLog(bool)**.
-Set if the api execution should be logged. `true` by default except for `get` http methods.
-
-* **shouldLogRequestData(bool)**.
-Set if the api request data should be logged. `true` by default.
-
-* **shouldLogRequestHeaders(bool)**.
-Set if the api response data should be logged. `true` by default.
-
-* **excludeFieldsLogRequestData(fields)**.
-Set the fields to exclude from the api request data that will be logged. `fields` should be an array.
-
-* **excludeFieldsLogResponseBody(fields)**.
-Set the fields to exclude from the api response body that will be logged. `fields` should be an array.
-
-
 ## Dispatcher
 
 This is the class you should use to dispatch your APIs. It takes the request data as constructor arguments and then finds you API file based on the endpoint and executes it.

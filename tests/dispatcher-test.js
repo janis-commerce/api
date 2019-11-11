@@ -123,6 +123,36 @@ describe('Dispatcher', function() {
 		}
 	}
 
+	class LogsEnabled extends ValidProcess {
+		get shouldCreateLog() {
+			return true;
+		}
+	}
+
+	class LogsDisabled extends ValidProcess {
+		get shouldCreateLog() {
+			return false;
+		}
+	}
+
+	class LogsMinimal extends ValidProcess {
+		get shouldCreateLog() {
+			return true;
+		}
+
+		get shouldLogRequestHeaders() {
+			return false;
+		}
+
+		get shouldLogRequestData() {
+			return false;
+		}
+
+		get shouldLogResponseBody() {
+			return false;
+		}
+	}
+
 	const mock = (endpoint, classContent) => {
 		mockRequire(path.join(Fetcher.apiPath, endpoint), classContent);
 	};
@@ -142,6 +172,12 @@ describe('Dispatcher', function() {
 		mock('validate-correctly-endpoint/list', ValidateOk);
 		mock('valid-endpoint/list', ValidProcess);
 		mock('valid-endpoint/get', ValidProcess);
+		mock('logs-enabled/list', LogsEnabled);
+		mock('logs-enabled/get', LogsEnabled);
+		mock('logs-disabled/list', LogsDisabled);
+		mock('logs-disabled/get', LogsDisabled);
+		mock('logs-minimal/list', LogsMinimal);
+		mock('logs-minimal/get', LogsMinimal);
 		sandbox.stub(Log, 'add');
 	});
 
@@ -420,7 +456,7 @@ describe('Dispatcher', function() {
 	context('when an api request is executed', function() {
 
 		const defaultApi = {
-			endpoint: 'api/valid-endpoint',
+			endpoint: 'api/logs-enabled',
 			headers: {
 				'janis-api-key': 'foo',
 				'janis-api-secret': 'bar',
@@ -432,25 +468,21 @@ describe('Dispatcher', function() {
 
 		it('should log the api request', async () => {
 
-			extraProcess = api => {
-				api.shouldCreateLog = true;
-			};
-
 			responseBody = { message: 'ok' };
 			responseHeaders = { 'res-header': 'some-data' };
 
 			await test({
 				...defaultApi,
-				endpoint: 'api/valid-endpoint/10'
+				endpoint: 'api/logs-enabled/10'
 			}, 200, responseHeaders);
 
 			sandbox.assert.calledWithMatch(Log.add, 'fizzmod', {
 				entity: 'api',
-				entityId: 'valid-endpoint',
+				entityId: 'logs-enabled',
 				type: 'api-request',
 				log: {
 					api: {
-						endpoint: 'valid-endpoint/10',
+						endpoint: 'logs-enabled/10',
 						httpMethod: 'get'
 					},
 					request: {
@@ -471,25 +503,20 @@ describe('Dispatcher', function() {
 
 		it('should log the request without request data, headers and response body', async function() {
 
-			extraProcess = api => {
-
-				api.shouldCreateLog = true;
-				api.shouldLogRequestData = false;
-				api.shouldLogRequestHeaders = false;
-				api.shouldLogResponseBody = false;
-			};
-
 			responseBody = { message: 'ok' };
 
-			await test(defaultApi, 200);
+			await test({
+				...defaultApi,
+				endpoint: 'api/logs-minimal'
+			}, 200);
 
 			sandbox.assert.calledWithMatch(Log.add, 'fizzmod', {
 				entity: 'api',
-				entityId: 'valid-endpoint',
+				entityId: 'logs-minimal',
 				type: 'api-request',
 				log: {
 					api: {
-						endpoint: 'valid-endpoint',
+						endpoint: 'logs-minimal',
 						httpMethod: 'get'
 					},
 					request: {},
@@ -504,8 +531,6 @@ describe('Dispatcher', function() {
 		it('should log the request exlcuding the specified fields of request data and response body', async function() {
 
 			extraProcess = api => {
-
-				api.shouldCreateLog = true;
 
 				api.excludeFieldsLogRequestData = [
 					'password',
@@ -541,11 +566,11 @@ describe('Dispatcher', function() {
 
 			sandbox.assert.calledWithMatch(Log.add, 'fizzmod', {
 				entity: 'api',
-				entityId: 'valid-endpoint',
+				entityId: 'logs-enabled',
 				type: 'api-request',
 				log: {
 					api: {
-						endpoint: 'valid-endpoint',
+						endpoint: 'logs-enabled',
 						httpMethod: 'get'
 					},
 					request: {
@@ -575,17 +600,19 @@ describe('Dispatcher', function() {
 		});
 
 		it('should not log the api request with get method when api.shouldCreateLog is not set', async function() {
-			await test(defaultApi, 200);
+			await test({
+				...defaultApi,
+				endpoint: 'api/valid-endpoint'
+			}, 200);
 			sandbox.assert.notCalled(Log.add);
 		});
 
 		it('should not log the api request when api.shouldCreateLog is false', async function() {
 
-			extraProcess = api => {
-				api.shouldCreateLog = false;
-			};
-
-			await test(defaultApi, 200);
+			await test({
+				...defaultApi,
+				endpoint: 'api/logs-disabled'
+			}, 200);
 			sandbox.assert.notCalled(Log.add);
 		});
 	});
