@@ -178,7 +178,7 @@ describe('Dispatcher', function() {
 		mock('logs-disabled/get', LogsDisabled);
 		mock('logs-minimal/list', LogsMinimal);
 		mock('logs-minimal/get', LogsMinimal);
-		sandbox.stub(Log, 'add');
+		sandbox.stub(Log, 'add').resolves();
 	});
 
 	afterEach(() => {
