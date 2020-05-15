@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [4.2.5] - 2020-05-15
+### Changed
+- Dependencies updated
+
 ## [4.2.4] - 2020-04-16
 ### Fixed
 - Logs for api request not awaited causing some logs not to be successfully sent
