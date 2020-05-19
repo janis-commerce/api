@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [4.3.0] - 2020-05-19
+### Removed
+- `package-lock.json` file
+
 ## [4.2.5] - 2020-05-15
 ### Changed
 - Dependencies updated
