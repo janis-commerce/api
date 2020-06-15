@@ -1,4 +1,4 @@
-# API
+# api
 
 [![Build Status](https://travis-ci.org/janis-commerce/api.svg?branch=master)](https://travis-ci.org/janis-commerce/api)
 [![Coverage Status](https://coveralls.io/repos/github/janis-commerce/api/badge.svg?branch=master)](https://coveralls.io/github/janis-commerce/api?branch=master)
@@ -11,7 +11,6 @@ A package for managing API from any origin.
 ```bash
 npm install @janiscommerce/api
 ```
-
 
 ## API
 
@@ -127,6 +126,14 @@ This package implements [API Session](https://www.npmjs.com/package/@janiscommer
 
 Session details and customization details can be found in api-session README.
 
+### ⚠️ **Breaking changes from version *5.0.0*** ⚠️
+*Since 5.0.0*
+
+Updated [API Session](https://www.npmjs.com/package/@janiscommerce/api-session) dependency to `^2.x.x`
+
+The session of an api allows you to validates **locations** instead of **stores**
+
+For more information see [API Session](https://www.npmjs.com/package/@janiscommerce/api-session)
 
 ## API Examples
 

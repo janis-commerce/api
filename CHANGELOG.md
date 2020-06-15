@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [5.0.0] - 2020-06-15
+### Changed
+- Updated @janiscommerce/api-session to `2.x.x`
+
 ## [4.3.0] - 2020-05-19
 ### Removed
 - `package-lock.json` file
