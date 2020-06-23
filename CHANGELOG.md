@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [5.1.0] - 2020-06-23
+### Added
+- Added support for error response with messageVariables
+- Added new `ErrorWithVariables` to easily send a response with variables
+
 ## [5.0.1] - 2020-06-18
 ### Removed
 - Removed useless API inheritance validation
