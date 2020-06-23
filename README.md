@@ -119,6 +119,20 @@ It also uses the following error codes:
 | Invalid authentication data | 9 | The request authentication data received is not an object |
 
 
+## ErrorWithVariables
+
+This is an error class to use to return easily a message and variables apply to it, for example to handle error translation properly.
+
+Every variable should be a scalar (not an array or object). Otherwise it will be casted to a string.
+
+```js
+const { ErrorWithVariables } = require('@janiscommerce/api');
+
+throw new ErrorWithVariables('some.error.to.translate', {
+	name: 'Some name to replace in translation'
+})
+```
+
 ## Session injection
 *Since 2.0.0*
 
