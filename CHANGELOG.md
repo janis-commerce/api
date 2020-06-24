@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [5.1.1] - 2020-06-24
+### Fixed
+- Now responses without `messageVariables` are retro-compatible
+
 ## [5.1.0] - 2020-06-23
 ### Added
 - Added support for error response with messageVariables
