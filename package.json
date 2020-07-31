@@ -36,7 +36,7 @@
   "dependencies": {
     "@janiscommerce/api-session": "^2.0.0",
     "@janiscommerce/log": "^3.2.0",
-    "lodash.omit": "4.5.0",
-    "superstruct": "0.6.2"
+    "@janiscommerce/superstruct": "^1.1.1",
+    "lodash.omit": "4.5.0"
   }
 }
