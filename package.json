@@ -6,7 +6,7 @@
   "scripts": {
     "test": "export TEST_ENV=true; mocha --exit -R nyan --recursive tests/",
     "watch-test": "export TEST_ENV=true; mocha --exit -R nyan -w --recursive tests/",
-    "test-ci": "nyc --reporter=html --reporter=text mocha --recursive tests/",
+    "test-ci": "nyc --reporter=lcov --reporter=text-summary mocha --exit --recursive tests/",
     "coverage": "nyc npm test",
     "lint": "eslint lib/ tests/"
   },
@@ -24,18 +24,18 @@
   },
   "homepage": "https://github.com/janis-commerce/api#readme",
   "devDependencies": {
-    "eslint": "^7.2.0",
+    "eslint": "^7.7.0",
     "eslint-config-airbnb-base": "^13.2.0",
     "eslint-plugin-import": "^2.18.0",
-    "husky": "^2.7.0",
-    "mocha": "^8.0.1",
+    "husky": "^4.2.5",
+    "mocha": "^8.1.2",
     "mock-require": "^3.0.3",
     "nyc": "^15.1.0",
-    "sinon": "^9.0.2"
+    "sinon": "^9.0.3"
   },
   "dependencies": {
-    "@janiscommerce/api-session": "^2.0.0",
-    "@janiscommerce/log": "^3.2.0",
+    "@janiscommerce/api-session": "^3.0.0",
+    "@janiscommerce/log": "^3.3.0",
     "@janiscommerce/superstruct": "^1.1.1",
     "lodash.omit": "4.5.0"
   }

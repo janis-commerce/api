@@ -1,7 +1,8 @@
 # api
 
-[![Build Status](https://travis-ci.org/janis-commerce/api.svg?branch=master)](https://travis-ci.org/janis-commerce/api)
+![Build Status](https://github.com/janis-commerce/api/workflows/Build%20Status/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/janis-commerce/api/badge.svg?branch=master)](https://coveralls.io/github/janis-commerce/api?branch=master)
+[![npm version](https://badge.fury.io/js/%40janiscommerce%2Fapi.svg)](https://www.npmjs.com/package/@janiscommerce/api)
 
 A package for managing API from any origin.
 
@@ -139,15 +140,6 @@ throw new ErrorWithVariables('some.error.to.translate', {
 This package implements [API Session](https://www.npmjs.com/package/@janiscommerce/api-session). In order to associate a request to a session, you must pass a valid authentication data in the `authenticationData` property of the Dispatcher constructor.
 
 Session details and customization details can be found in api-session README.
-
-### ⚠️ **Breaking changes from version *5.0.0*** ⚠️
-*Since 5.0.0*
-
-Updated [API Session](https://www.npmjs.com/package/@janiscommerce/api-session) dependency to `^2.x.x`
-
-The session of an api allows you to validates **locations** instead of **stores**
-
-For more information see [API Session](https://www.npmjs.com/package/@janiscommerce/api-session)
 
 ## API Examples
 

@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [6.0.0] - 2020-08-27
+### Added
+- GitHub Actions for build, coverage and publish
+
+### Changed
+- Updated `@janiscommerce/api-session` to `3.x.x`
+
 ## [5.1.2] - 2020-07-31
 ### Changed
 - Changed `superstruct` for `@janiscommerce/superstruct`
