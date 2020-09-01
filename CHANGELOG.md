@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [6.0.1] - 2020-08-01
+### Fixed
+- Fix isObject helper
+
 ## [6.0.0] - 2020-08-27
 ### Added
 - GitHub Actions for build, coverage and publish
