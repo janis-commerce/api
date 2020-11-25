@@ -477,6 +477,7 @@ describe('Dispatcher', function() {
 			}, 200, responseHeaders);
 
 			sandbox.assert.calledWithMatch(Log.add, 'fizzmod', {
+				id: sandbox.match.string,
 				entity: 'api',
 				entityId: 'logs-enabled',
 				type: 'api-request',
@@ -511,6 +512,7 @@ describe('Dispatcher', function() {
 			}, 200);
 
 			sandbox.assert.calledWithMatch(Log.add, 'fizzmod', {
+				id: sandbox.match.string,
 				entity: 'api',
 				entityId: 'logs-minimal',
 				type: 'api-request',
@@ -565,6 +567,7 @@ describe('Dispatcher', function() {
 			}, 200);
 
 			sandbox.assert.calledWithMatch(Log.add, 'fizzmod', {
+				id: sandbox.match.string,
 				entity: 'api',
 				entityId: 'logs-enabled',
 				type: 'api-request',
