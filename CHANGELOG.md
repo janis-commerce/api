@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [6.2.0] - 2020-12-01
+### Added
+- Added `userId` for logs
+
+### Changed
+- Created `LogHelper` to improve package organization
+
 ## [6.1.0] - 2020-11-25
 ### Added
 - Added `logId` property to each api instance

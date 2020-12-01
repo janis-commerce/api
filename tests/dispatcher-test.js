@@ -466,21 +466,30 @@ describe('Dispatcher', function() {
 			authenticationData: { clientCode: 'fizzmod' }
 		};
 
-		it('should log the api request', async () => {
+		const commonLog = {
+			id: sandbox.match.string,
+			entity: 'api',
+			type: 'api-request',
+			log: {
+				executionTime: sandbox.match.number
+			}
+		};
+
+		it('should log the api request with userCreated field', async () => {
 
 			responseBody = { message: 'ok' };
 			responseHeaders = { 'res-header': 'some-data' };
 
 			await test({
 				...defaultApi,
+				authenticationData: { ...defaultApi.authenticationData, userId: '5e7d07d6cf27a10008fe4d23' },
 				endpoint: 'api/logs-enabled/10'
 			}, 200, responseHeaders);
 
 			sandbox.assert.calledWithMatch(Log.add, 'fizzmod', {
-				id: sandbox.match.string,
-				entity: 'api',
+				...commonLog,
 				entityId: 'logs-enabled',
-				type: 'api-request',
+				userCreated: '5e7d07d6cf27a10008fe4d23',
 				log: {
 					api: {
 						endpoint: 'logs-enabled/10',
@@ -496,8 +505,7 @@ describe('Dispatcher', function() {
 						code: 200,
 						headers: responseHeaders,
 						body: responseBody
-					},
-					executionTime: sandbox.match.number
+					}
 				}
 			});
 		});
@@ -512,10 +520,8 @@ describe('Dispatcher', function() {
 			}, 200);
 
 			sandbox.assert.calledWithMatch(Log.add, 'fizzmod', {
-				id: sandbox.match.string,
-				entity: 'api',
+				...commonLog,
 				entityId: 'logs-minimal',
-				type: 'api-request',
 				log: {
 					api: {
 						endpoint: 'logs-minimal',
@@ -524,8 +530,7 @@ describe('Dispatcher', function() {
 					request: {},
 					response: {
 						code: 200
-					},
-					executionTime: sandbox.match.number
+					}
 				}
 			});
 		});
@@ -567,10 +572,8 @@ describe('Dispatcher', function() {
 			}, 200);
 
 			sandbox.assert.calledWithMatch(Log.add, 'fizzmod', {
-				id: sandbox.match.string,
-				entity: 'api',
+				...commonLog,
 				entityId: 'logs-enabled',
-				type: 'api-request',
 				log: {
 					api: {
 						endpoint: 'logs-enabled',
@@ -596,8 +599,7 @@ describe('Dispatcher', function() {
 								publicCode: 2
 							}
 						}
-					},
-					executionTime: sandbox.match.number
+					}
 				}
 			});
 		});
