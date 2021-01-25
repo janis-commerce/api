@@ -66,3 +66,6 @@ debug.js
 
 # config folder
 config/
+
+# Built types definitions
+types/
