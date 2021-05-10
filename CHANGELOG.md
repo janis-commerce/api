@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [6.2.2] - 2021-05-10
+### Fixed
+- Avoid sending `userCreated` to the Log if the Request was not performed by a User
+
 ## [6.2.1] - 2021-01-27
 ### Added
 - Typings build from JSDoc
