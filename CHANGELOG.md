@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [6.4.0] - 2021-11-11
+### Added
+- Errors are not masqueraded any more
+- Added `rawData` getter and setter
+
+### Fixed
+- Now logs are saved with the original data
+
 ## [6.3.0] - 2021-06-11
 ### Added
 - Now API Request logs have basic information in the `message` property
