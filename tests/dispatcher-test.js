@@ -427,13 +427,17 @@ describe('Dispatcher', function() {
 				assert.deepStrictEqual(api.headers, { 'my-header': 'foo' });
 				assert.deepStrictEqual(api.cookies, { 'my-cookie': 'bar' });
 				assert.deepStrictEqual(api.session.clientCode, 'fizzmod');
+				assert.deepStrictEqual(api.data, { foo: 'bar' });
+				assert.deepStrictEqual(api.rawData, JSON.stringify({ foo: 'bar' }));
 			};
 
 			await test({
 				endpoint: 'api/valid-endpoint/10',
 				headers: { 'my-header': 'foo' },
 				cookies: { 'my-cookie': 'bar' },
-				authenticationData: { clientCode: 'fizzmod' }
+				authenticationData: { clientCode: 'fizzmod' },
+				data: { foo: 'bar' },
+				rawData: JSON.stringify({ foo: 'bar' })
 			}, 200);
 		});
 
