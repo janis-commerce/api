@@ -56,7 +56,7 @@ describe('Dispatcher', function() {
 
 	const NoClass = { foo: 'bar' };
 
-	class NoApiInheritance {}
+	class NoProcessMethod {}
 
 	class NoProcess extends API {}
 
@@ -159,7 +159,7 @@ describe('Dispatcher', function() {
 
 	beforeEach(() => {
 		mock('invalid-api-class-endpoint/list', NoClass);
-		mock('invalid-api-inheritance/list', NoApiInheritance);
+		mock('no-process-method/list', NoProcessMethod);
 		mock('no-process-endpoint/list', NoProcess);
 		mock('validate-rejects-endpoint/put', ValidateRejects);
 		mock('validate-rejects-default-message-endpoint/post', ValidateRejectsDefault);
@@ -257,101 +257,143 @@ describe('Dispatcher', function() {
 	context('5xx errors', function() {
 
 		it('should return code 500 when api file hasn\'t a class', async function() {
-			await test({
+			await assert.rejects(() => test({
 				endpoint: 'api/invalid-api-class-endpoint'
-			}, 500);
+			}), {
+				message: /APIController is not a constructor/
+			});
 		});
 
-		it('should return code 500 when api does not inherit from API', async function() {
-			await test({
-				endpoint: 'api/invalid-api-inheritance'
-			}, 500);
+		it('should return code 500 when api does not have a process method', async function() {
+			await assert.rejects(() => test({
+				endpoint: 'api/no-process-method'
+			}), {
+				message: 'API \'NoProcessMethod\' Method \'process\' not found'
+			});
 		});
 
 		it('should return code 500 when api file found but api object has not a process method', async function() {
-			await test({
+			await assert.rejects(() => test({
 				endpoint: 'api/no-process-endpoint'
-			}, 500);
+			}), {
+				statusCode: 500,
+				message: 'Missing implementation for API.process'
+			});
 		});
 
 		it('should return code 500 when api process method throw an internal server error', async function() {
-			await test({
+			await assert.rejects(() => test({
 				endpoint: 'api/process-rejects-endpoint',
 				method: 'post'
-			}, 500);
+			}), {
+				statusCode: 500,
+				message: 'some internal error'
+			});
 		});
 
 		it('should return code 500 when api process method throw an internal server error - default message', async function() {
-			await test({
+			await assert.rejects(() => test({
 				endpoint: 'api/process-rejects-default-message-endpoint',
 				method: 'post'
-			}, 500);
+			}), {
+				statusCode: 500,
+				message: 'Internal server error'
+			});
 		});
 
 		it('should return a custom HTTP Code and default message when code given', async function() {
 
 			httpCode = 501;
 
-			await test({
+			await assert.rejects(() => test({
 				endpoint: 'api/process-rejects-custom-code-endpoint',
 				method: 'post'
-			}, 501);
+			}), {
+				statusCode: 501,
+				message: 'Internal server error'
+			});
 		});
 	});
 
 	context('4xx errors', function() {
 
 		it('should return code 404 when api file not found', async function() {
-			await test({
+			await assert.rejects(() => test({
 				endpoint: 'api/unknown-endpoint'
-			}, 404);
+			}), {
+				statusCode: 404
+			});
 		});
 
 		it('should return code 400 when api validate method throw a data invalid', async function() {
-			await test({
+			await assert.rejects(() => test({
 				endpoint: 'api/validate-rejects-endpoint',
 				method: 'put'
-			}, 400);
+			}), {
+				statusCode: 400,
+				message: 'some data invalid'
+			});
 		});
 
 		it('should return code 400 when api validate method throw a data invalid - default message', async function() {
-			await test({
+			await assert.rejects(() => test({
 				endpoint: 'api/validate-rejects-default-message-endpoint',
 				method: 'post'
-			}, 400);
+			}), {
+				statusCode: 400,
+				message: 'Invalid data'
+			});
 		});
 
 		it('should response with custom HTTP Code and default message when validate fails and code given', async function() {
 
 			httpCode = 401;
 
-			await test({
+			await assert.rejects(() => test({
 				endpoint: 'api/validate-rejects-custom-code-endpoint',
 				method: 'post'
-			}, 401);
+			}), {
+				statusCode: 401,
+				message: 'Invalid data'
+			});
 		});
 
-		it('should return code 400 when api data is invlaid against struct', async function() {
-			await test({
+		it('should return code 400 when api data is invalid against struct', async function() {
+
+			await assert.rejects(() => test({
 				endpoint: 'api/struct-endpoint'
-			}, 400);
+			}), {
+				statusCode: 400,
+				message: 'Expected a value of type `string` for `foo` but received `undefined`.'
+			});
 
-			await test({
+			await assert.rejects(() => test({
 				endpoint: 'api/struct-endpoint',
-				data: { unknownField: '123' }
-			}, 400);
+				data: { foo: 'bar', unknownField: '123' }
+			}), {
+				statusCode: 400,
+				message: 'Expected a value of type `undefined` for `unknownField` but received `"123"`.'
+			});
+
 		});
 
-		it('should return code 400 when api data is invlaid against struct multiple', async function() {
-			await test({
+		it('should return code 400 when api data is invalid against struct multiple', async function() {
+
+			await assert.rejects(() => test({
 				endpoint: 'api/struct-multiple-endpoint',
 				data: { foo: '123' }
-			}, 400);
+			}), {
+				statusCode: 400,
+				message: 'Expected a value of type `number` for `bar` but received `undefined`.'
+			});
 
-			await test({
+			await assert.rejects(() => test({
 				endpoint: 'api/struct-multiple-endpoint',
 				data: { bar: 123 }
-			}, 400);
+			}), {
+				statusCode: 400,
+				message: 'Expected a value of type `string` for `foo` but received `undefined`.'
+			});
 		});
 	});
 
@@ -535,7 +577,7 @@ describe('Dispatcher', function() {
 			});
 		});
 
-		it('should log the request exlcuding the specified fields of request data and response body', async function() {
+		it('should log the request excluding the specified fields of request data and response body', async function() {
 
 			extraProcess = api => {
 
