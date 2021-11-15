@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [6.4.1] - 2021-11-15
+### Fixed
+- Logs when API fails are now generated with statusCode and response body again
+
 ## [6.4.0] - 2021-11-11
 ### Added
 - Errors are not masqueraded any more
