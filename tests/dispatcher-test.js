@@ -110,6 +110,22 @@ describe('Dispatcher', function() {
 		}
 	}
 
+	class ProcessRejectsBody extends API {
+		async process() {
+			const error = new Error('some internal error');
+			error.body = { foo: 'bar' };
+			throw error;
+		}
+	}
+
+	class ProcessRejectsWithVariables extends API {
+		async process() {
+			const error = new Error('some internal error');
+			error.messageVariables = { foo: 'bar' };
+			throw error;
+		}
+	}
+
 	class ProcessRejectsDefault extends API {
 		async process() {
 			throw new Error();
@@ -165,6 +181,8 @@ describe('Dispatcher', function() {
 		mock('validate-rejects-default-message-endpoint/post', ValidateRejectsDefault);
 		mock('validate-rejects-custom-code-endpoint/post', ValidateRejectsCustomCode);
 		mock('process-rejects-endpoint/post', ProcessRejects);
+		mock('process-rejects-body-endpoint/post', ProcessRejectsBody);
+		mock('process-rejects-with-variables-endpoint/post', ProcessRejectsWithVariables);
 		mock('process-rejects-default-message-endpoint/post', ProcessRejectsDefault);
 		mock('process-rejects-custom-code-endpoint/post', ProcessRejectsCustomCode);
 		mock('struct-endpoint/list', Struct);
@@ -268,7 +286,9 @@ describe('Dispatcher', function() {
 			await assert.rejects(() => test({
 				endpoint: 'api/no-process-method'
 			}), {
-				message: 'API \'NoProcessMethod\' Method \'process\' not found'
+				body: {
+					message: 'API \'NoProcessMethod\' Method \'process\' not found'
+				}
 			});
 		});
 
@@ -277,7 +297,9 @@ describe('Dispatcher', function() {
 				endpoint: 'api/no-process-endpoint'
 			}), {
 				statusCode: 500,
-				message: 'Missing implementation for API.process'
+				body: {
+					message: 'Missing implementation for API.process'
+				}
 			});
 		});
 
@@ -287,7 +309,9 @@ describe('Dispatcher', function() {
 				method: 'post'
 			}), {
 				statusCode: 500,
-				message: 'some internal error'
+				body: {
+					message: 'some internal error'
+				}
 			});
 		});
 
@@ -297,7 +321,9 @@ describe('Dispatcher', function() {
 				method: 'post'
 			}), {
 				statusCode: 500,
-				message: 'Internal server error'
+				body: {
+					message: 'Internal server error'
+				}
 			});
 		});
 
@@ -310,7 +336,36 @@ describe('Dispatcher', function() {
 				method: 'post'
 			}), {
 				statusCode: 501,
-				message: 'Internal server error'
+				body: {
+					message: 'Internal server error'
+				}
+			});
+		});
+
+		it('should use error.body as response body if it is defined', async function() {
+			await assert.rejects(() => test({
+				endpoint: 'api/process-rejects-body-endpoint',
+				method: 'post'
+			}), {
+				statusCode: 500,
+				body: {
+					foo: 'bar'
+				}
+			});
+		});
+
+		it('should use error.message and error.messageVariables as response body if it is defined', async function() {
+			await assert.rejects(() => test({
+				endpoint: 'api/process-rejects-with-variables-endpoint',
+				method: 'post'
+			}), {
+				statusCode: 500,
+				body: {
+					message: 'some internal error',
+					messageVariables: {
+						foo: 'bar'
+					}
+				}
 			});
 		});
 	});
@@ -331,7 +386,9 @@ describe('Dispatcher', function() {
 				method: 'put'
 			}), {
 				statusCode: 400,
-				message: 'some data invalid'
+				body: {
+					message: 'some data invalid'
+				}
 			});
 		});
 
@@ -341,7 +398,9 @@ describe('Dispatcher', function() {
 				method: 'post'
 			}), {
 				statusCode: 400,
-				message: 'Invalid data'
+				body: {
+					message: 'Invalid data'
+				}
 			});
 		});
 
@@ -354,7 +413,9 @@ describe('Dispatcher', function() {
 				method: 'post'
 			}), {
 				statusCode: 401,
-				message: 'Invalid data'
+				body: {
+					message: 'Invalid data'
+				}
 			});
 		});
 
@@ -364,7 +425,9 @@ describe('Dispatcher', function() {
 				endpoint: 'api/struct-endpoint'
 			}), {
 				statusCode: 400,
-				message: 'Expected a value of type `string` for `foo` but received `undefined`.'
+				body: {
+					message: 'Expected a value of type `string` for `foo` but received `undefined`.'
+				}
 			});
 
 			await assert.rejects(() => test({
@@ -372,7 +435,9 @@ describe('Dispatcher', function() {
 				data: { foo: 'bar', unknownField: '123' }
 			}), {
 				statusCode: 400,
-				message: 'Expected a value of type `undefined` for `unknownField` but received `"123"`.'
+				body: {
+					message: 'Expected a value of type `undefined` for `unknownField` but received `"123"`.'
+				}
 			});
 
 		});
@@ -384,7 +449,9 @@ describe('Dispatcher', function() {
 				data: { foo: '123' }
 			}), {
 				statusCode: 400,
-				message: 'Expected a value of type `number` for `bar` but received `undefined`.'
+				body: {
+					message: 'Expected a value of type `number` for `bar` but received `undefined`.'
+				}
 			});
 
 			await assert.rejects(() => test({
@@ -392,7 +459,9 @@ describe('Dispatcher', function() {
 				data: { bar: 123 }
 			}), {
 				statusCode: 400,
-				message: 'Expected a value of type `string` for `foo` but received `undefined`.'
+				body: {
+					message: 'Expected a value of type `string` for `foo` but received `undefined`.'
+				}
 			});
 		});
 	});
