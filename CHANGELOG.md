@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [6.4.2] - 2021-11-19
+### Fixed
+- API `data` is not freezed any more. Only `pristineData` is.
+
 ## [6.4.1] - 2021-11-15
 ### Fixed
 - Logs when API fails are now generated with statusCode and response body again
