@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [6.5.0] - 2022-01-31
+### Added
+- Now emits event `janiscommerce.ended` when the executing has ended. The event is emitted with [@janiscommerce/events](https://www.npmjs.com/package/@janiscommerce/events)
+
 ## [6.4.2] - 2021-11-19
 ### Fixed
 - API `data` is not freezed any more. Only `pristineData` is.

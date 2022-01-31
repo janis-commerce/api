@@ -4,10 +4,11 @@ const path = require('path');
 const mockRequire = require('mock-require');
 
 const assert = require('assert');
-const sandbox = require('sinon').createSandbox();
+const sinon = require('sinon');
 
 const Log = require('@janiscommerce/log');
 
+const Events = require('@janiscommerce/events');
 const { API, APIError, Dispatcher } = require('../lib');
 const Fetcher = require('../lib/fetcher');
 
@@ -196,13 +197,13 @@ describe('Dispatcher', function() {
 		mock('logs-disabled/get', LogsDisabled);
 		mock('logs-minimal/list', LogsMinimal);
 		mock('logs-minimal/get', LogsMinimal);
-		sandbox.stub(Log, 'add').resolves();
+		sinon.stub(Log, 'add').resolves();
 	});
 
 	afterEach(() => {
 		delete process.env.MS_PATH;
 		mockRequire.stopAll();
-		sandbox.restore();
+		sinon.restore();
 	});
 
 	const test = async (myApiData, code, headers = {}, cookies = {}) => {
@@ -273,6 +274,9 @@ describe('Dispatcher', function() {
 	});
 
 	context('5xx errors', function() {
+
+		beforeEach(() => sinon.stub(Events, 'emit').resolves());
+		afterEach(() => sinon.assert.calledOnceWithExactly(Events.emit, 'janiscommerce.ended'));
 
 		it('should return code 500 when api file hasn\'t a class', async function() {
 			await assert.rejects(() => test({
@@ -372,6 +376,9 @@ describe('Dispatcher', function() {
 
 	context('4xx errors', function() {
 
+		beforeEach(() => sinon.stub(Events, 'emit').resolves());
+		afterEach(() => sinon.assert.calledWithExactly(Events.emit, 'janiscommerce.ended'));
+
 		it('should return code 404 when api file not found', async function() {
 			await assert.rejects(() => test({
 				endpoint: 'api/unknown-endpoint'
@@ -467,6 +474,9 @@ describe('Dispatcher', function() {
 	});
 
 	context('2xx responses', function() {
+
+		beforeEach(() => sinon.stub(Events, 'emit').resolves());
+		afterEach(() => sinon.assert.calledOnceWithExactly(Events.emit, 'janiscommerce.ended'));
 
 		it('should return code 200 when api validates correctly', async function() {
 			await test({
@@ -570,6 +580,9 @@ describe('Dispatcher', function() {
 
 	context('when an api request is executed', function() {
 
+		beforeEach(() => sinon.stub(Events, 'emit').resolves());
+		afterEach(() => sinon.assert.calledOnceWithExactly(Events.emit, 'janiscommerce.ended'));
+
 		const defaultApi = {
 			endpoint: 'api/logs-enabled',
 			headers: {
@@ -582,11 +595,11 @@ describe('Dispatcher', function() {
 		};
 
 		const commonLog = {
-			id: sandbox.match.string,
+			id: sinon.match.string,
 			entity: 'api',
 			type: 'api-request',
 			log: {
-				executionTime: sandbox.match.number
+				executionTime: sinon.match.number
 			}
 		};
 
@@ -601,7 +614,7 @@ describe('Dispatcher', function() {
 				endpoint: 'api/logs-enabled/10'
 			}, 200, responseHeaders);
 
-			sandbox.assert.calledWithMatch(Log.add, 'fizzmod', {
+			sinon.assert.calledWithMatch(Log.add, 'fizzmod', {
 				...commonLog,
 				entityId: 'logs-enabled',
 				userCreated: '5e7d07d6cf27a10008fe4d23',
@@ -634,7 +647,7 @@ describe('Dispatcher', function() {
 				endpoint: 'api/logs-minimal'
 			}, 200);
 
-			sandbox.assert.calledWithMatch(Log.add, 'fizzmod', {
+			sinon.assert.calledWithMatch(Log.add, 'fizzmod', {
 				...commonLog,
 				entityId: 'logs-minimal',
 				log: {
@@ -686,7 +699,7 @@ describe('Dispatcher', function() {
 				}
 			}, 200);
 
-			sandbox.assert.calledWithMatch(Log.add, 'fizzmod', {
+			sinon.assert.calledWithMatch(Log.add, 'fizzmod', {
 				...commonLog,
 				entityId: 'logs-enabled',
 				log: {
@@ -697,9 +710,9 @@ describe('Dispatcher', function() {
 					request: {
 						data: {
 							some: 'data',
-							password: sandbox.match.undefined,
+							password: sinon.match.undefined,
 							location: {
-								address: sandbox.match.undefined,
+								address: sinon.match.undefined,
 								country: 'AR'
 							}
 						}
@@ -708,9 +721,9 @@ describe('Dispatcher', function() {
 						code: 200,
 						body: {
 							message: 'ok',
-							password: sandbox.match.undefined,
+							password: sinon.match.undefined,
 							authData: {
-								secretCode: sandbox.match.undefined,
+								secretCode: sinon.match.undefined,
 								publicCode: 2
 							}
 						}
@@ -724,7 +737,7 @@ describe('Dispatcher', function() {
 				...defaultApi,
 				endpoint: 'api/valid-endpoint'
 			}, 200);
-			sandbox.assert.notCalled(Log.add);
+			sinon.assert.notCalled(Log.add);
 		});
 
 		it('should not log the api request when api.shouldCreateLog is false', async function() {
@@ -733,7 +746,7 @@ describe('Dispatcher', function() {
 				...defaultApi,
 				endpoint: 'api/logs-disabled'
 			}, 200);
-			sandbox.assert.notCalled(Log.add);
+			sinon.assert.notCalled(Log.add);
 		});
 	});
 });
