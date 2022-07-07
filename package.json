@@ -41,7 +41,7 @@
   "dependencies": {
     "@janiscommerce/api-session": "^3.2.0",
     "@janiscommerce/events": "^0.1.0",
-    "@janiscommerce/log": "^3.4.2",
+    "@janiscommerce/log": "^3.5.0",
     "@janiscommerce/superstruct": "^1.2.0",
     "lodash.omit": "4.5.0",
     "uuid": "^8.3.2"
