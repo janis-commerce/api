@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [6.5.2] - 2022-07-15
+### Added
+- `janis-service-name` in `log.request` for **Log** when `janis-api-key` is form a **Janis Service**
+
 ## [6.5.1] - 2022-07-07
 ### Added
 - Now dispatcher creates ENV var `JANIS_API_REQUEST_LOG_ID` for saving related logs. See more in [@janiscommerce/log](https://www.npmjs.com/package/@janiscommerce/log)

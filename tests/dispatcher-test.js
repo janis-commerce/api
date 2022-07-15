@@ -663,6 +663,36 @@ describe('Dispatcher', function() {
 			});
 		});
 
+		it('should log the request adding the janis-service-name when janis-api-key was service prefix', async function() {
+
+			responseBody = { message: 'ok' };
+
+			await test({
+				...defaultApi,
+				headers: {
+					'janis-api-key': 'service-vtex-catalog'
+				},
+				endpoint: 'api/logs-minimal'
+			}, 200);
+
+			sinon.assert.calledWithMatch(Log.add, 'fizzmod', {
+				...commonLog,
+				entityId: 'logs-minimal',
+				log: {
+					api: {
+						endpoint: 'logs-minimal',
+						httpMethod: 'get'
+					},
+					request: {
+						'janis-service-name': 'vtex-catalog'
+					},
+					response: {
+						code: 200
+					}
+				}
+			});
+		});
+
 		it('should log the request excluding the specified fields of request data and response body', async function() {
 
 			extraProcess = api => {
