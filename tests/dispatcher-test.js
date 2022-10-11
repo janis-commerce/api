@@ -491,6 +491,13 @@ describe('Dispatcher', function() {
 			}, 200);
 		});
 
+		it('should return code 200 when api validates correctly the struct & apply trim to data', async function() {
+			await test({
+				endpoint: 'api/struct-endpoint',
+				data: { foo: '   bar  ' }
+			}, 200);
+		});
+
 		it('should return code 200 when api has no validate method', async function() {
 			await test({
 				endpoint: 'api/valid-endpoint'
