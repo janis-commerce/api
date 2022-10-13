@@ -484,17 +484,24 @@ describe('Dispatcher', function() {
 			}, 200);
 		});
 
+		it('should return code 200 when api validates correctly & apply trim to data', async function() {
+			await test({
+				endpoint: 'api/validate-correctly-endpoint',
+				data: {
+					foo: {
+						a: '   bar  ',
+						b: {
+							c: ' test  '
+						}
+					}
+				}
+			}, 200);
+		});
+
 		it('should return code 200 when api validates correctly the struct', async function() {
 			await test({
 				endpoint: 'api/struct-endpoint',
 				data: { foo: 'bar' }
-			}, 200);
-		});
-
-		it('should return code 200 when api validates correctly the struct & apply trim to data', async function() {
-			await test({
-				endpoint: 'api/struct-endpoint',
-				data: { foo: '   bar  ' }
 			}, 200);
 		});
 
