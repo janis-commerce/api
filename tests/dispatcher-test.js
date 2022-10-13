@@ -484,16 +484,33 @@ describe('Dispatcher', function() {
 			}, 200);
 		});
 
+		extraProcess = api => {
+			assert.deepStrictEqual(api.data, {
+				foo: 'foo',
+				bar: ['bar'],
+				baz: [{ test: 'test', numField: 123 }],
+				nullField: null
+			});
+		};
+
 		it('should return code 200 when api validates correctly & apply trim to data', async function() {
+
+			extraProcess = api => {
+				assert.deepStrictEqual(api.data, {
+					foo: 'foo',
+					bar: ['bar'],
+					baz: [{ test: 'test', numField: 123 }],
+					nullField: null
+				});
+			};
+
 			await test({
-				endpoint: 'api/validate-correctly-endpoint',
+				endpoint: 'api/valid-endpoint',
 				data: {
-					foo: {
-						a: '   bar  ',
-						b: {
-							c: ' test  '
-						}
-					}
+					foo: '   foo  ',
+					bar: [' bar  '],
+					baz: [{ test: 'test ', numField: 123 }],
+					nullField: null
 				}
 			}, 200);
 		});
