@@ -433,7 +433,7 @@ describe('Dispatcher', function() {
 			}), {
 				statusCode: 400,
 				body: {
-					message: 'Expected a value of type `string` for `foo` but received `undefined`.'
+					message: 'Expected a value of type `{foo}` but received `undefined`.'
 				}
 			});
 
