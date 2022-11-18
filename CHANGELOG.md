@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [6.6.0] - 2022-11-18
+### Changed
+- Now data received is trimmed to avoid empty spaces before and after for strings
+
 ## [6.5.2] - 2022-07-15
 ### Added
 - `janis-service-name` in `log.request` for **Log** when `janis-api-key` is form a **Janis Service**
