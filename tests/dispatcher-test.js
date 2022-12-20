@@ -8,7 +8,6 @@ const sinon = require('sinon');
 
 const Log = require('@janiscommerce/log');
 
-const Events = require('@janiscommerce/events');
 const { API, APIError, Dispatcher } = require('../lib');
 const Fetcher = require('../lib/fetcher');
 
@@ -275,9 +274,6 @@ describe('Dispatcher', function() {
 
 	context('5xx errors', function() {
 
-		beforeEach(() => sinon.stub(Events, 'emit').resolves());
-		afterEach(() => sinon.assert.calledOnceWithExactly(Events.emit, 'janiscommerce.ended'));
-
 		it('should return code 500 when api file hasn\'t a class', async function() {
 			await assert.rejects(() => test({
 				endpoint: 'api/invalid-api-class-endpoint'
@@ -376,9 +372,6 @@ describe('Dispatcher', function() {
 
 	context('4xx errors', function() {
 
-		beforeEach(() => sinon.stub(Events, 'emit').resolves());
-		afterEach(() => sinon.assert.calledWithExactly(Events.emit, 'janiscommerce.ended'));
-
 		it('should return code 404 when api file not found', async function() {
 			await assert.rejects(() => test({
 				endpoint: 'api/unknown-endpoint'
@@ -474,9 +467,6 @@ describe('Dispatcher', function() {
 	});
 
 	context('2xx responses', function() {
-
-		beforeEach(() => sinon.stub(Events, 'emit').resolves());
-		afterEach(() => sinon.assert.calledOnceWithExactly(Events.emit, 'janiscommerce.ended'));
 
 		it('should return code 200 when api validates correctly', async function() {
 			await test({
@@ -610,9 +600,6 @@ describe('Dispatcher', function() {
 	});
 
 	context('when an api request is executed', function() {
-
-		beforeEach(() => sinon.stub(Events, 'emit').resolves());
-		afterEach(() => sinon.assert.calledOnceWithExactly(Events.emit, 'janiscommerce.ended'));
 
 		const defaultApi = {
 			endpoint: 'api/logs-enabled',

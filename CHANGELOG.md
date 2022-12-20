@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [6.6.1] - 2022-12-20
+### Removed
+- Emitting event `janiscommerce.ended`, this is emitted on [@janiscommerce/sls-api-rest](https://www.npmjs.com/package/@janiscommerce/sls-api-rest)
+
 ## [6.6.0] - 2022-11-18
 ### Changed
 - Now data received is trimmed to avoid empty spaces before and after for strings
