@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [7.0.0] - 2023-04-18
+### Changed
+- Update package [@janiscommerce/log](https://www.npmjs.com/package/@janiscommerce/log) that use AWS SDK V3
+
+### Removed
+- Replace package `uuid` with `crypto`
+
 ## [6.6.1] - 2022-12-20
 ### Removed
 - Emitting event `janiscommerce.ended`, this is emitted on [@janiscommerce/sls-api-rest](https://www.npmjs.com/package/@janiscommerce/sls-api-rest)
