@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [8.0.0] - 2023-09-18
+### Changed
+- Updated `@janiscommerce/log` to version 5 **BREAKING CHANGE**
+
 ## [7.0.0] - 2023-04-18
 ### Changed
 - Update package [@janiscommerce/log](https://www.npmjs.com/package/@janiscommerce/log) that use AWS SDK V3
