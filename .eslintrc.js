@@ -9,20 +9,13 @@ module.exports = {
 		mocha: true
 	},
 
-	globals: {
-		__rootpath: true,
-		coreRequire: true,
-		mainRequire: true,
-		JANIS_CORE: true,
-		JANIS_ENV: true,
-		JANIS_ENV_ALIAS: true
-	},
-
 	parserOptions: {
-		sourceType: 'script'
+		sourceType: 'script',
+		ecmaVersion: 2020
 	},
 
 	rules: {
+		strict: ['error', 'global'],
 		'operator-linebreak': 0,
 		'no-continue': 0,
 		'no-plusplus': 0,
@@ -51,9 +44,9 @@ module.exports = {
 		'func-names': 0,
 
 		'space-before-function-paren': ['error', {
-			'anonymous': 'never',
-			'named': 'never',
-			'asyncArrow': 'always'
+			anonymous: 'never',
+			named: 'never',
+			asyncArrow: 'always'
 		}],
 
 		'arrow-parens': ['error', 'as-needed'],

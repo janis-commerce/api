@@ -29,18 +29,18 @@
   "homepage": "https://github.com/janis-commerce/api#readme",
   "devDependencies": {
     "eslint": "^8.27.0",
-    "eslint-config-airbnb-base": "^13.2.0",
-    "eslint-plugin-import": "^2.25.3",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.28.1",
     "husky": "^8.0.3",
     "mocha": "^10.2.0",
     "mock-require": "^3.0.3",
     "nyc": "^15.1.0",
-    "sinon": "^15.0.3",
-    "typescript": "^4.4.4"
+    "sinon": "^16.0.0",
+    "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@janiscommerce/api-session": "^3.3.1",
-    "@janiscommerce/log": "^4.0.0",
+    "@janiscommerce/api-session": "^3.4.0",
+    "@janiscommerce/log": "^5.0.3",
     "@janiscommerce/superstruct": "^1.2.1",
     "lodash.clonedeep": "^4.5.0",
     "lodash.omit": "4.5.0"
