@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [8.0.1] - 2024-02-09
+### Changed
+- From now on `executionTime` for **Log** are saved in `ms`
+
 ## [8.0.0] - 2023-09-18
 ### Changed
 - Updated `@janiscommerce/log` to version 5 **BREAKING CHANGE**
