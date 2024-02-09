@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [8.0.2] - 2024-02-09
+### Fixed
+- Fixed wrong `executionTime` calculation
+
 ## [8.0.1] - 2024-02-09
 ### Changed
 - From now on `executionTime` for **Log** are saved in `ms`
