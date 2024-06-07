@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@janiscommerce/api-session": "^3.4.0",
-    "@janiscommerce/log": "^5.0.3",
+    "@janiscommerce/log": "^5.0.6",
     "@janiscommerce/superstruct": "^1.2.1",
     "lodash.clonedeep": "^4.5.0",
     "lodash.omit": "4.5.0"

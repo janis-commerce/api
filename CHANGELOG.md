@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [8.0.3] - 2024-06-07
+### Changed
+- From now on **Log** is related to the entity and `entityId` read from the endpoint or response `body.id`
+
 ## [8.0.2] - 2024-02-09
 ### Fixed
 - Fixed wrong `executionTime` calculation

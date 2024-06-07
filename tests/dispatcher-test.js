@@ -15,7 +15,7 @@ const Fetcher = require('../lib/fetcher');
 
 /* eslint-disable prefer-arrow-callback */
 
-describe('Dispatcher', function() {
+describe('Dispatcher', () => {
 
 	let httpCode;
 	let responseBody;
@@ -216,7 +216,7 @@ describe('Dispatcher', function() {
 		assert.deepStrictEqual(result.cookies, cookies, 'Error in expected response cookies');
 	};
 
-	context('invalid data received', function() {
+	context('invalid data received', () => {
 
 		const testConstructorReject = (APIErrorCode, requestData) => {
 			assert.throws(() => {
@@ -241,40 +241,40 @@ describe('Dispatcher', function() {
 			['foo', 'bar']
 		];
 
-		it('should reject when no request data given', function() {
+		it('should reject when no request data given', () => {
 			testConstructorReject(APIError.codes.INVALID_REQUEST_DATA);
 		});
 
-		it('should reject when no object request data received', function() {
+		it('should reject when no object request data received', () => {
 			noObjects.forEach(requestData => testConstructorReject(APIError.codes.INVALID_REQUEST_DATA, requestData));
 		});
 
-		it('should reject when no enpoint given', function() {
+		it('should reject when no endpoint given', () => {
 			testConstructorReject(APIError.codes.INVALID_ENDPOINT, {});
 		});
 
-		it('should reject when invalid method given', function() {
+		it('should reject when invalid method given', () => {
 			const endpoint = 'valid/endpoint';
 			noStrings.forEach(method => testConstructorReject(APIError.codes.INVALID_METHOD, { endpoint, method }));
 		});
 
-		it('should reject when invalid headers given', function() {
+		it('should reject when invalid headers given', () => {
 			const endpoint = 'valid/endpoint';
 			noObjects.forEach(headers => testConstructorReject(APIError.codes.INVALID_HEADERS, { endpoint, headers }));
 		});
 
-		it('should reject when invalid cookies given', function() {
+		it('should reject when invalid cookies given', () => {
 			const endpoint = 'valid/endpoint';
 			noObjects.forEach(cookies => testConstructorReject(APIError.codes.INVALID_COOKIES, { endpoint, cookies }));
 		});
 
-		it('should reject when invalid authentication data given', function() {
+		it('should reject when invalid authentication data given', () => {
 			const endpoint = 'valid/endpoint';
 			noObjects.forEach(authenticationData => testConstructorReject(APIError.codes.INVALID_AUTHENTICATION_DATA, { endpoint, authenticationData }));
 		});
 	});
 
-	context('5xx errors', function() {
+	context('5xx errors', () => {
 
 		it('should return code 500 when api file hasn\'t a class', async function() {
 			await assert.rejects(() => test({
@@ -372,7 +372,7 @@ describe('Dispatcher', function() {
 		});
 	});
 
-	context('4xx errors', function() {
+	context('4xx errors', () => {
 
 		it('should return code 404 when api file not found', async function() {
 			await assert.rejects(() => test({
@@ -468,7 +468,7 @@ describe('Dispatcher', function() {
 		});
 	});
 
-	context('2xx responses', function() {
+	context('2xx responses', () => {
 
 		it('should return code 200 when api validates correctly', async function() {
 			await test({
@@ -601,7 +601,7 @@ describe('Dispatcher', function() {
 
 	});
 
-	context('when an api request is executed', function() {
+	context('when an api request is executed', () => {
 
 		const defaultApi = {
 			endpoint: 'api/logs-enabled',
@@ -616,11 +616,8 @@ describe('Dispatcher', function() {
 
 		const commonLog = {
 			id: sinon.match.string,
-			entity: 'api',
 			type: 'api-request',
-			log: {
-				executionTime: sinon.match.number
-			}
+			log: { executionTime: sinon.match.number }
 		};
 
 		it('should log the api request with userCreated field', async () => {
@@ -636,7 +633,8 @@ describe('Dispatcher', function() {
 
 			sinon.assert.calledWithMatch(Log.add, 'fizzmod', {
 				...commonLog,
-				entityId: 'logs-enabled',
+				entity: 'logs-enabled',
+				entityId: '10',
 				userCreated: '5e7d07d6cf27a10008fe4d23',
 				log: {
 					api: {
@@ -660,7 +658,7 @@ describe('Dispatcher', function() {
 
 		it('should log the request without request data, headers and response body', async function() {
 
-			responseBody = { message: 'ok' };
+			responseBody = { message: 'ok', id: '6663117329438a003c10247a' };
 
 			await test({
 				...defaultApi,
@@ -669,7 +667,8 @@ describe('Dispatcher', function() {
 
 			sinon.assert.calledWithMatch(Log.add, 'fizzmod', {
 				...commonLog,
-				entityId: 'logs-minimal',
+				entity: 'logs-minimal',
+				entityId: '6663117329438a003c10247a',
 				log: {
 					api: {
 						endpoint: 'logs-minimal',
@@ -697,7 +696,7 @@ describe('Dispatcher', function() {
 
 			sinon.assert.calledWithMatch(Log.add, 'fizzmod', {
 				...commonLog,
-				entityId: 'logs-minimal',
+				entity: 'logs-minimal',
 				log: {
 					api: {
 						endpoint: 'logs-minimal',
@@ -751,7 +750,7 @@ describe('Dispatcher', function() {
 
 			sinon.assert.calledWithMatch(Log.add, 'fizzmod', {
 				...commonLog,
-				entityId: 'logs-enabled',
+				entity: 'logs-enabled',
 				log: {
 					api: {
 						endpoint: 'logs-enabled',
