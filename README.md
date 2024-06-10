@@ -32,29 +32,33 @@ The following methods will be inherited from the base API Class:
 
 ### Getters
 
-* **pathParameters** (*getter*).
-Returns the path parameters of the request as an array of values. For example: /store/10/schedules will generate the following path parameters: ['10']
+- **pathParameters**. *string array*.
+Returns the path parameters of the request. For example: /store/10/schedules will generate the following path parameters: ['10']
 
-* **headers** (*getter*).
+- **headers**. *object*.
 Returns the the headers of the request as a key-value object.
 
-* **cookies** (*getter*).
+- **cookies**. *object*.
 Returns the the cookies of the request as a key-value object.
 
-* **shouldCreateLog(*getter*)**.
-Returns if the api execution should be logged as a boolean.
+- **shouldCreateLog**. *boolean*.
+Determines if the api execution should be logged or not.
+When the HTTP Method is **GET** the *default* is `false` and `true` otherwise.
 
-* **shouldLogRequestData(*getter*)**.
-Returns if the api request data should be logged as a boolean.
+- **shouldLogRequestData**. *boolean*.
+Determines if the api request data should be logged or not.
 
-* **shouldLogRequestHeaders(*getter*)**.
-Returns if the api response data should be logged as a boolean.
+- **shouldLogRequestHeaders**. *boolean*.
+Determines if the api response data should be logged or not.
 
-* **excludeFieldsLogRequestData(*getter*)**.
-Returns the fields to exclude from the api request data that will be logged as an array.
+- **shouldLogResponseBody**. *boolean*.
+Determines if the api response body should be logged or not.
 
-* **excludeFieldsLogResponseBody(*getter*)**.
-Returns the fields to exclude from the api response body that will be logged as an array.
+- **excludeFieldsLogRequestData**. *string array*.
+Returns the fields to exclude from the api request data.
+
+- **excludeFieldsLogResponseBody**. *string array*.
+Returns the fields to exclude from the api response body. The fields will be omitted recursively.
 
 ### Setters
 
