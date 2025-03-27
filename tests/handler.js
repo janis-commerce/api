@@ -277,7 +277,6 @@ describe('Handler', () => {
 
 			it('Should set API.session.authenticationData as an empty object if janisAuth is not set', async () => {
 
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const { janisAuth, ...restAuthorizer } = getApiRequest.authorizer;
 
 				const response = await new Handler(RequestPassthrough).handle({
