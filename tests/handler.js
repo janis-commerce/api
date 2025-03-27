@@ -5,7 +5,6 @@ const sinon = require('sinon');
 
 // @ts-expect-error TS7016
 const Events = require('@janiscommerce/events');
-// @ts-expect-error TS7016
 const Log = require('@janiscommerce/log');
 
 const LogHelper = require('../lib/helpers/log');
