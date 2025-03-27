@@ -1,6 +1,6 @@
 {
   "name": "@janiscommerce/api",
-  "version": "9.0.0-4",
+  "version": "9.0.0-5",
   "description": "A package for managing API from any origin",
   "main": "lib/index.js",
   "scripts": {
