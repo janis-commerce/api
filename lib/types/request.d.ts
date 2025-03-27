@@ -1,3 +1,5 @@
+import { ValidationSchema } from 'fastest-validator';
+
 export type ApiGatewayIdentity = {
 	sourceIp: string;
 	userAgent: string;
@@ -14,7 +16,6 @@ export type UpperCaseRequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
 export type LowerCaseRequestMethod = 'get' | 'post' | 'put' | 'delete' | 'patch';
 
 export type RawRequestEvent = {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	body: any;
 	rawBody: string;
 	method: UpperCaseRequestMethod;
@@ -46,3 +47,9 @@ export type APIRequest<RequestData, PathParameters extends string[]> = {
 	pathParameters: string[];
 	rawPathParameters: { [key in PathParameters[number]]: string };
 };
+
+type NotAny<T> = 0 extends (1 & T) ? never : T;
+
+export type StrictValidationSchema<T> = T extends NotAny<T>
+  ? ValidationSchema<T>
+  : never;

@@ -3,7 +3,6 @@
 const assert = require('assert');
 const sinon = require('sinon');
 
-// @ts-expect-error TS7016
 const Events = require('@janiscommerce/events');
 const Log = require('@janiscommerce/log');
 
@@ -92,7 +91,6 @@ describe('Handler', () => {
 
 		it('Should throw an Error if API has an invalid data schema', async () => {
 
-			// @ts-expect-error TS2345
 			assert.throws(() => new Handler(InvalidDataSchema), {
 				message: 'Invalid schema.'
 			});
@@ -149,7 +147,6 @@ describe('Handler', () => {
 				const response = await new Handler(Struct).handle({
 					...getApiRequest,
 					query: {
-						// @ts-expect-error TS2322
 						'foo[0]': 1
 					}
 				});
@@ -163,7 +160,6 @@ describe('Handler', () => {
 				const response = await new Handler(DataSchema).handle({
 					...getApiRequest,
 					query: {
-						// @ts-expect-error TS2322
 						'foo[0]': 1
 					}
 				});

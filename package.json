@@ -9,7 +9,7 @@
     "test-ci": "nyc --reporter=lcov --reporter=text-summary mocha --exit --require tests/resources/bootstrap --recursive tests/",
     "coverage": "nyc npm test",
     "lint": "eslint lib/ tests/",
-    "build-types": "tsc lib/index.js --declaration --allowJs --emitDeclarationOnly --outDir types",
+    "build-types": "if [ -d types ]; then rm -r types; fi; tsc lib/index.js --declaration --allowJs --emitDeclarationOnly --outDir types && mkdir -p types/types && cp -r lib/types/* types/types/",
     "prepare": "husky install"
   },
   "files": [

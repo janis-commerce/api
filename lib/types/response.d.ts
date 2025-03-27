@@ -17,7 +17,6 @@ export type ResponseCookieWithOptions = {
 
 export type APIResponse = {
 	clientCode?: string;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	body: any;
 	code?: number;
 	headers: Record<string, string>;
