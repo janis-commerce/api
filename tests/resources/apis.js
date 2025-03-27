@@ -6,7 +6,8 @@ const { API, ErrorWithVariables } = require('../../lib');
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class InvalidDataSchema extends API {
 	// @ts-expect-error TS2416
@@ -21,7 +22,8 @@ class InvalidDataSchema extends API {
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class StructAndDataSchema extends API {
 
@@ -44,13 +46,15 @@ class StructAndDataSchema extends API {
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class NoProcess extends API {}
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class EmptyProcess extends API {
 	// eslint-disable-next-line no-empty-function
@@ -59,7 +63,8 @@ class EmptyProcess extends API {
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class ValidProcess extends API {
 	async process() {
@@ -69,7 +74,8 @@ class ValidProcess extends API {
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class ValidProcessWithBody extends API {
 	async process() {
@@ -79,7 +85,8 @@ class ValidProcessWithBody extends API {
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class ValidProcessWithHeader extends API {
 	async process() {
@@ -89,7 +96,8 @@ class ValidProcessWithHeader extends API {
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class ValidProcessWithHeaders extends API {
 	async process() {
@@ -100,7 +108,8 @@ class ValidProcessWithHeaders extends API {
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class ValidProcessWithCookie extends API {
 	async process() {
@@ -110,7 +119,8 @@ class ValidProcessWithCookie extends API {
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class ValidProcessWithCookies extends API {
 	async process() {
@@ -120,7 +130,8 @@ class ValidProcessWithCookies extends API {
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class ValidProcessWithEmptyCookies extends API {
 	async process() {
@@ -130,7 +141,8 @@ class ValidProcessWithEmptyCookies extends API {
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class ValidProcessWithCustomizedCookie extends API {
 	async process() {
@@ -147,7 +159,8 @@ class ValidProcessWithCustomizedCookie extends API {
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class ValidProcessWithCustomizedCookieWithDefaults extends API {
 	async process() {
@@ -159,7 +172,8 @@ class ValidProcessWithCustomizedCookieWithDefaults extends API {
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class ValidProcessWithHeadersAndCookies extends API {
 	async process() {
@@ -171,7 +185,8 @@ class ValidProcessWithHeadersAndCookies extends API {
 
 /**
  * @template RequestData
- * @extends {ValidProcess<RequestData>}
+ * @template PathParameters
+ * @extends {ValidProcess<RequestData, PathParameters>}
  */
 class ValidateOk extends ValidProcess {
 	async validate() {
@@ -183,7 +198,8 @@ class ValidateOk extends ValidProcess {
 
 /**
  * @template RequestData
- * @extends {ValidProcess<RequestData>}
+ * @template PathParameters
+ * @extends {ValidProcess<RequestData, PathParameters>}
  */
 class ValidateRejects extends ValidProcess {
 	async validate() {
@@ -193,7 +209,8 @@ class ValidateRejects extends ValidProcess {
 
 /**
  * @template RequestData
- * @extends {ValidProcess<RequestData>}
+ * @template PathParameters
+ * @extends {ValidProcess<RequestData, PathParameters>}
  */
 class ValidateRejectsString extends ValidProcess {
 	async validate() {
@@ -204,7 +221,8 @@ class ValidateRejectsString extends ValidProcess {
 
 /**
  * @template RequestData
- * @extends {ValidProcess<RequestData>}
+ * @template PathParameters
+ * @extends {ValidProcess<RequestData, PathParameters>}
  */
 class ValidateRejectsCustomCode extends ValidProcess {
 	async validate() {
@@ -215,7 +233,8 @@ class ValidateRejectsCustomCode extends ValidProcess {
 
 /**
  * @template RequestData
- * @extends {ValidProcess<RequestData>}
+ * @template PathParameters
+ * @extends {ValidProcess<RequestData, PathParameters>}
  */
 class Struct extends ValidProcess {
 	get struct() {
@@ -225,7 +244,8 @@ class Struct extends ValidProcess {
 
 /**
  * @template RequestData
- * @extends {ValidProcess<RequestData>}
+ * @template PathParameters
+ * @extends {ValidProcess<RequestData, PathParameters>}
  */
 class StructMultiple extends ValidProcess {
 	get struct() {
@@ -240,7 +260,8 @@ class StructMultiple extends ValidProcess {
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class DataSchema extends API {
 	/**
@@ -258,7 +279,8 @@ class DataSchema extends API {
 
 /**
  * @template RequestData
- * @extends {ValidProcess<RequestData>}
+ * @template PathParameters
+ * @extends {ValidProcess<RequestData, PathParameters>}
  */
 class RequestPassthrough extends ValidProcess {
 	async process() {
@@ -269,7 +291,8 @@ class RequestPassthrough extends ValidProcess {
 
 /**
  * @template RequestData
- * @extends {ValidProcess<RequestData>}
+ * @template PathParameters
+ * @extends {ValidProcess<RequestData, PathParameters>}
  */
 class RequestGettersPassthrough extends ValidProcess {
 	async process() {
@@ -285,7 +308,8 @@ class RequestGettersPassthrough extends ValidProcess {
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class ProcessRejects extends API {
 	async process() {
@@ -295,7 +319,8 @@ class ProcessRejects extends API {
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class ProcessRejectsString extends API {
 	async process() {
@@ -306,7 +331,8 @@ class ProcessRejectsString extends API {
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class ProcessRejectsWithVariables extends API {
 	async process() {
@@ -316,7 +342,8 @@ class ProcessRejectsWithVariables extends API {
 
 /**
  * @template RequestData
- * @extends {API<RequestData>}
+ * @template PathParameters
+ * @extends {API<RequestData, PathParameters>}
  */
 class ProcessRejectsCustomCode extends API {
 	async process() {
@@ -327,7 +354,8 @@ class ProcessRejectsCustomCode extends API {
 
 /**
  * @template RequestData
- * @extends {ValidProcess<RequestData>}
+ * @template PathParameters
+ * @extends {ValidProcess<RequestData, PathParameters>}
  */
 class LogsDisabled extends ValidProcess {
 	get shouldCreateLog() {
@@ -341,7 +369,8 @@ class LogsDisabled extends ValidProcess {
 
 /**
  * @template RequestData
- * @extends {ValidProcess<RequestData>}
+ * @template PathParameters
+ * @extends {ValidProcess<RequestData, PathParameters>}
  */
 class LogsMinimal extends ValidProcess {
 	get shouldCreateLog() {
@@ -367,7 +396,8 @@ class LogsMinimal extends ValidProcess {
 
 /**
  * @template RequestData
- * @extends {ValidProcess<RequestData>}
+ * @template PathParameters
+ * @extends {ValidProcess<RequestData, PathParameters>}
  */
 class LogsWithLessData extends ValidProcess {
 	get shouldCreateLog() {

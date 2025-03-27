@@ -33,7 +33,7 @@ export type LowerCaseHeaders = Record<string, string>;
 
 export type Cookies = Record<string, string>;
 
-export type APIRequest<RequestData> = {
+export type APIRequest<RequestData, PathParameters> = {
 	session: import('@janiscommerce/api-session').ApiSession;
 	logId: string;
 	data: RequestData;
@@ -44,5 +44,5 @@ export type APIRequest<RequestData> = {
 	headers: LowerCaseHeaders;
 	cookies: Cookies;
 	pathParameters: string[];
-	rawPathParameters: Record<string, string>;
+	rawPathParameters: PathParameters;
 };
