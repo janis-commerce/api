@@ -1,13 +1,23 @@
 'use strict';
 
 module.exports = {
-	extends: 'airbnb-base',
+	extends: [
+		'eslint:recommended',
+		'plugin:@typescript-eslint/eslint-recommended',
+		'plugin:@typescript-eslint/recommended',
+		'airbnb-base'
+	],
 
 	env: {
 		node: true,
 		es6: true,
 		mocha: true
 	},
+
+	parser: '@typescript-eslint/parser',
+	plugins: [
+		'@typescript-eslint'
+	],
 
 	parserOptions: {
 		sourceType: 'script',
@@ -106,6 +116,8 @@ module.exports = {
 			ObjectExpression: { minProperties: 5, multiline: true, consistent: true },
 			ObjectPattern: { minProperties: 5, multiline: true, consistent: true }
 		}],
-		'nonblock-statement-body-position': ['error', 'below', { overrides: { else: 'any' } }]
+		'nonblock-statement-body-position': ['error', 'below', { overrides: { else: 'any' } }],
+
+		'@typescript-eslint/no-require-imports': 0
 	}
 };

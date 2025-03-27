@@ -18,6 +18,14 @@ describe('Api ErrorWithVariables', () => {
 		assert.strictEqual(error.name, 'ErrorWithVariables');
 	});
 
+	it('Should set statusCode=0 by default', () => {
+		const error = new ErrorWithVariables('Some error', {
+			foo: 'bar'
+		});
+
+		assert.strictEqual(error.statusCode, 0);
+	});
+
 	it('Should accept an error instance and a code', () => {
 
 		const previousError = new Error('Some error');

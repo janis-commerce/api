@@ -14,6 +14,12 @@ describe('Api Session Error', () => {
 		assert.strictEqual(error.name, 'APIError');
 	});
 
+	it('Should set statusCode=0 by default', () => {
+		const error = new APIError('Some error', APIError.codes.INVALID_REQUEST_DATA);
+
+		assert.strictEqual(error.statusCode, 0);
+	});
+
 	it('Should accept an error instance and a code', () => {
 
 		const previousError = new Error('Some error');

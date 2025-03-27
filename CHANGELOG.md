@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- APIs now have a `rawPathParameters` getter that contains the path parameters in a key-value manner (key is always in lowercase)
+- New API getter `dataSchema` to validate request data with [fastest-validator](https://www.npmjs.com/package/fastest-validator)
+
+### Changed
+- Request headers are now forced to be lowercase (only the header name, not the value) **BREAKING CHANGE**
+- API getter `excludeFieldsLogRequestData` and `excludeFieldsLogResponseBody` must always be an array of strings when defined **BREAKING CHANGE**
+
+### Deprecated
+- API `struct` is not recommended any more. Use `dataSchema` instead for better performance
 
 ## [8.0.3] - 2024-06-07
 ### Changed
