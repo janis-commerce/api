@@ -1,4 +1,4 @@
-import { ValidationSchema } from 'fastest-validator';
+import { ValidationSchemaMetaKeys, ValidationRule } from 'fastest-validator';
 
 export type ApiGatewayIdentity = {
 	sourceIp: string;
@@ -48,8 +48,6 @@ export type APIRequest<RequestData, PathParameters extends string[]> = {
 	rawPathParameters: { [key in PathParameters[number]]: string };
 };
 
-type NotAny<T> = 0 extends (1 & T) ? never : T;
-
-export type StrictValidationSchema<T> = T extends NotAny<T>
-  ? ValidationSchema<T>
-  : never;
+export type StrictValidationSchema<T> = ValidationSchemaMetaKeys & {
+	[key in keyof T]: ValidationRule;
+}
