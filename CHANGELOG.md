@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - New API getter `dataSchema` to validate request data with [fastest-validator](https://www.npmjs.com/package/fastest-validator)
 
 ### Changed
+- Changed Node.js min supported version to 18 **BREAKING CHANGE**
 - Request headers are now forced to be lowercase (only the header name, not the value) **BREAKING CHANGE**
 - API getter `excludeFieldsLogRequestData` and `excludeFieldsLogResponseBody` must always be an array of strings when defined **BREAKING CHANGE**
 
