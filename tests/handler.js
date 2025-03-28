@@ -59,18 +59,16 @@ describe('Handler', () => {
 	 */
 	const assertResponse = (response, statusCode, assertFn) => {
 
-		const parsedResponse = JSON.parse(response);
-
 		if(typeof statusCode !== 'undefined') {
-			assert.strictEqual(parsedResponse.code, statusCode, `${parsedResponse.code}: ${parsedResponse.body}`);
-			assert.strictEqual(parsedResponse.statusCodeForPatternMatching, `[${statusCode}]`);
+			assert.strictEqual(response.code, statusCode, `${response.code}: ${response.body}`);
+			assert.strictEqual(response.statusCodeForPatternMatching, `[${statusCode}]`);
 		}
 
-		const parsedBody = parsedResponse.body && JSON.parse(parsedResponse.body);
+		const parsedBody = response.body && JSON.parse(response.body);
 
 		if(assertFn) {
 			assertFn({
-				...parsedResponse,
+				...response,
 				body: parsedBody
 			});
 		}

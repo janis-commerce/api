@@ -3,7 +3,7 @@ export type RawResponsePayload = {
 	statusCode: number;
 	statusCodeForPatternMatching: string;
 	headers?: Record<string, string>;
-	body?: unknown;
+	body?: string;
 };
 
 export type ResponseCookieWithOptions = {
