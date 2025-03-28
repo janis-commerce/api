@@ -60,7 +60,7 @@ describe('Handler', () => {
 	const assertResponse = (response, statusCode, assertFn) => {
 
 		if(typeof statusCode !== 'undefined') {
-			assert.strictEqual(response.code, statusCode, `${response.code}: ${response.body}`);
+			assert.strictEqual(response.statusCode, statusCode, `${response.code}: ${response.body}`);
 			assert.strictEqual(response.statusCodeForPatternMatching, `[${statusCode}]`);
 		}
 
