@@ -241,34 +241,34 @@ describe('Dispatcher', () => {
 			['foo', 'bar']
 		];
 
-		it('should reject when no request data given', () => {
+		it('Should reject when no request data given', () => {
 			testConstructorReject(APIError.codes.INVALID_REQUEST_DATA);
 		});
 
-		it('should reject when no object request data received', () => {
+		it('Should reject when no object request data received', () => {
 			noObjects.forEach(requestData => testConstructorReject(APIError.codes.INVALID_REQUEST_DATA, requestData));
 		});
 
-		it('should reject when no endpoint given', () => {
+		it('Should reject when no endpoint given', () => {
 			testConstructorReject(APIError.codes.INVALID_ENDPOINT, {});
 		});
 
-		it('should reject when invalid method given', () => {
+		it('Should reject when invalid method given', () => {
 			const endpoint = 'valid/endpoint';
 			noStrings.forEach(method => testConstructorReject(APIError.codes.INVALID_METHOD, { endpoint, method }));
 		});
 
-		it('should reject when invalid headers given', () => {
+		it('Should reject when invalid headers given', () => {
 			const endpoint = 'valid/endpoint';
 			noObjects.forEach(headers => testConstructorReject(APIError.codes.INVALID_HEADERS, { endpoint, headers }));
 		});
 
-		it('should reject when invalid cookies given', () => {
+		it('Should reject when invalid cookies given', () => {
 			const endpoint = 'valid/endpoint';
 			noObjects.forEach(cookies => testConstructorReject(APIError.codes.INVALID_COOKIES, { endpoint, cookies }));
 		});
 
-		it('should reject when invalid authentication data given', () => {
+		it('Should reject when invalid authentication data given', () => {
 			const endpoint = 'valid/endpoint';
 			noObjects.forEach(authenticationData => testConstructorReject(APIError.codes.INVALID_AUTHENTICATION_DATA, { endpoint, authenticationData }));
 		});
@@ -276,7 +276,7 @@ describe('Dispatcher', () => {
 
 	context('5xx errors', () => {
 
-		it('should return code 500 when api file hasn\'t a class', async function() {
+		it('Should return code 500 when api file hasn\'t a class', async function() {
 			await assert.rejects(() => test({
 				endpoint: 'api/invalid-api-class-endpoint'
 			}), {
@@ -284,7 +284,7 @@ describe('Dispatcher', () => {
 			});
 		});
 
-		it('should return code 500 when api does not have a process method', async function() {
+		it('Should return code 500 when api does not have a process method', async function() {
 			await assert.rejects(() => test({
 				endpoint: 'api/no-process-method'
 			}), {
@@ -294,7 +294,7 @@ describe('Dispatcher', () => {
 			});
 		});
 
-		it('should return code 500 when api file found but api object has not a process method', async function() {
+		it('Should return code 500 when api file found but api object has not a process method', async function() {
 			await assert.rejects(() => test({
 				endpoint: 'api/no-process-endpoint'
 			}), {
@@ -305,7 +305,7 @@ describe('Dispatcher', () => {
 			});
 		});
 
-		it('should return code 500 when api process method throw an internal server error', async function() {
+		it('Should return code 500 when api process method throw an internal server error', async function() {
 			await assert.rejects(() => test({
 				endpoint: 'api/process-rejects-endpoint',
 				method: 'post'
@@ -317,7 +317,7 @@ describe('Dispatcher', () => {
 			});
 		});
 
-		it('should return code 500 when api process method throw an internal server error - default message', async function() {
+		it('Should return code 500 when api process method throw an internal server error - default message', async function() {
 			await assert.rejects(() => test({
 				endpoint: 'api/process-rejects-default-message-endpoint',
 				method: 'post'
@@ -329,7 +329,7 @@ describe('Dispatcher', () => {
 			});
 		});
 
-		it('should return a custom HTTP Code and default message when code given', async function() {
+		it('Should return a custom HTTP Code and default message when code given', async function() {
 
 			httpCode = 501;
 
@@ -344,7 +344,7 @@ describe('Dispatcher', () => {
 			});
 		});
 
-		it('should use error.body as response body if it is defined', async function() {
+		it('Should use error.body as response body if it is defined', async function() {
 			await assert.rejects(() => test({
 				endpoint: 'api/process-rejects-body-endpoint',
 				method: 'post'
@@ -356,7 +356,7 @@ describe('Dispatcher', () => {
 			});
 		});
 
-		it('should use error.message and error.messageVariables as response body if it is defined', async function() {
+		it('Should use error.message and error.messageVariables as response body if it is defined', async function() {
 			await assert.rejects(() => test({
 				endpoint: 'api/process-rejects-with-variables-endpoint',
 				method: 'post'
@@ -374,7 +374,7 @@ describe('Dispatcher', () => {
 
 	context('4xx errors', () => {
 
-		it('should return code 404 when api file not found', async function() {
+		it('Should return code 404 when api file not found', async function() {
 			await assert.rejects(() => test({
 				endpoint: 'api/unknown-endpoint'
 			}), {
@@ -382,7 +382,7 @@ describe('Dispatcher', () => {
 			});
 		});
 
-		it('should return code 400 when api validate method throw a data invalid', async function() {
+		it('Should return code 400 when api validate method throw a data invalid', async function() {
 			await assert.rejects(() => test({
 				endpoint: 'api/validate-rejects-endpoint',
 				method: 'put'
@@ -394,7 +394,7 @@ describe('Dispatcher', () => {
 			});
 		});
 
-		it('should return code 400 when api validate method throw a data invalid - default message', async function() {
+		it('Should return code 400 when api validate method throw a data invalid - default message', async function() {
 			await assert.rejects(() => test({
 				endpoint: 'api/validate-rejects-default-message-endpoint',
 				method: 'post'
@@ -406,7 +406,7 @@ describe('Dispatcher', () => {
 			});
 		});
 
-		it('should response with custom HTTP Code and default message when validate fails and code given', async function() {
+		it('Should response with custom HTTP Code and default message when validate fails and code given', async function() {
 
 			httpCode = 401;
 
@@ -421,7 +421,7 @@ describe('Dispatcher', () => {
 			});
 		});
 
-		it('should return code 400 when api data is invalid against struct', async function() {
+		it('Should return code 400 when api data is invalid against struct', async function() {
 
 			await assert.rejects(() => test({
 				endpoint: 'api/struct-endpoint'
@@ -444,7 +444,7 @@ describe('Dispatcher', () => {
 
 		});
 
-		it('should return code 400 when api data is invalid against struct multiple', async function() {
+		it('Should return code 400 when api data is invalid against struct multiple', async function() {
 
 			await assert.rejects(() => test({
 				endpoint: 'api/struct-multiple-endpoint',
@@ -470,7 +470,7 @@ describe('Dispatcher', () => {
 
 	context('2xx responses', () => {
 
-		it('should return code 200 when api validates correctly', async function() {
+		it('Should return code 200 when api validates correctly', async function() {
 			await test({
 				endpoint: 'api/validate-correctly-endpoint'
 			}, 200);
@@ -485,7 +485,7 @@ describe('Dispatcher', () => {
 			});
 		};
 
-		it('should return code 200 when api validates correctly & apply trim to data', async function() {
+		it('Should return code 200 when api validates correctly & apply trim to data', async function() {
 
 			extraProcess = api => {
 				assert.deepStrictEqual(api.data, {
@@ -507,20 +507,20 @@ describe('Dispatcher', () => {
 			}, 200);
 		});
 
-		it('should return code 200 when api validates correctly the struct', async function() {
+		it('Should return code 200 when api validates correctly the struct', async function() {
 			await test({
 				endpoint: 'api/struct-endpoint',
 				data: { foo: 'bar' }
 			}, 200);
 		});
 
-		it('should return code 200 when api has no validate method', async function() {
+		it('Should return code 200 when api has no validate method', async function() {
 			await test({
 				endpoint: 'api/valid-endpoint'
 			}, 200);
 		});
 
-		it('should return api requestData with getters', async function() {
+		it('Should return api requestData with getters', async function() {
 
 			extraProcess = api => {
 
@@ -543,7 +543,7 @@ describe('Dispatcher', () => {
 			}, 200);
 		});
 
-		it('should response with a custom HTTP Code when given', async function() {
+		it('Should response with a custom HTTP Code when given', async function() {
 
 			httpCode = 201;
 
@@ -552,7 +552,7 @@ describe('Dispatcher', () => {
 			}, 201);
 		});
 
-		it('should return code 200 when api response and set headers', async function() {
+		it('Should return code 200 when api response and set headers', async function() {
 
 			responseHeaders = { 'valid-header': 123 };
 
@@ -561,7 +561,7 @@ describe('Dispatcher', () => {
 			}, 200, responseHeaders);
 		});
 
-		it('should return code 200 when api response and set an individual header', async function() {
+		it('Should return code 200 when api response and set an individual header', async function() {
 
 			responseHeader = { name: 'valid-header', value: 123 };
 
@@ -570,7 +570,7 @@ describe('Dispatcher', () => {
 			}, 200, { 'valid-header': 123 });
 		});
 
-		it('should return code 200 when api response and set cookies', async function() {
+		it('Should return code 200 when api response and set cookies', async function() {
 
 			responseCookies = { 'valid-cookie': 123 };
 
@@ -579,7 +579,7 @@ describe('Dispatcher', () => {
 			}, 200, {}, responseCookies);
 		});
 
-		it('should return code 200 when api response and set an individual cookie', async function() {
+		it('Should return code 200 when api response and set an individual cookie', async function() {
 
 			responseCookie = { name: 'valid-cookie', value: 123 };
 
@@ -588,7 +588,7 @@ describe('Dispatcher', () => {
 			}, 200, {}, { 'valid-cookie': 123 });
 		});
 
-		it('should found api when using a prefix with ENV MS_PATH', async function() {
+		it('Should found api when using a prefix with ENV MS_PATH', async function() {
 
 			process.env.MS_PATH = 'my-custom-prefix';
 
@@ -620,7 +620,9 @@ describe('Dispatcher', () => {
 			log: { executionTime: sinon.match.number }
 		};
 
-		it('should log the api request with userCreated field', async () => {
+		it('Should log the api request with userCreated field', async () => {
+
+			extraProcess = () => {};
 
 			responseBody = { message: 'ok' };
 			responseHeaders = { 'res-header': 'some-data' };
@@ -656,7 +658,7 @@ describe('Dispatcher', () => {
 			});
 		});
 
-		it('should log the request without request data, headers and response body', async function() {
+		it('Should log the request without request data, headers and response body', async function() {
 
 			responseBody = { message: 'ok', id: '6663117329438a003c10247a' };
 
@@ -682,7 +684,7 @@ describe('Dispatcher', () => {
 			});
 		});
 
-		it('should log the request adding the janis-service-name when janis-api-key was service prefix', async function() {
+		it('Should log the request adding the janis-service-name when janis-api-key was service prefix', async function() {
 
 			responseBody = { message: 'ok' };
 
@@ -712,7 +714,7 @@ describe('Dispatcher', () => {
 			});
 		});
 
-		it('should log the request excluding the specified fields of request data and response body', async function() {
+		it('Should log the request excluding the specified fields of request data and response body', async function() {
 
 			extraProcess = api => {
 
@@ -759,9 +761,7 @@ describe('Dispatcher', () => {
 					request: {
 						data: {
 							some: 'data',
-							password: sinon.match.undefined,
 							location: {
-								address: sinon.match.undefined,
 								country: 'AR'
 							}
 						}
@@ -770,9 +770,7 @@ describe('Dispatcher', () => {
 						code: 200,
 						body: {
 							message: 'ok',
-							password: sinon.match.undefined,
 							authData: {
-								secretCode: sinon.match.undefined,
 								publicCode: 2
 							}
 						}
@@ -781,7 +779,482 @@ describe('Dispatcher', () => {
 			});
 		});
 
-		it('should not log the api request with get method when api.shouldCreateLog is not set', async function() {
+		it('Should exclude one field from the log when excludeFieldsLogRequestData has array pattern', async function() {
+
+			extraProcess = api => {
+				api.excludeFieldsLogRequestData = ['shipping.*.secondFactor'];
+				api.excludeFieldsLogResponseBody = ['items.*.secretKey'];
+			};
+
+			responseBody = {
+				message: 'ok',
+				items: [{
+					id: '123',
+					secretKey: 'secret-value',
+					name: 'Product A'
+				}]
+			};
+
+			await test({
+				...defaultApi,
+				data: {
+					orderId: 'order-123',
+					shipping: [{
+						id: 'ship-1',
+						secondFactor: 'auth-token',
+						provider: 'fedex'
+					}]
+				}
+			}, 200);
+
+			sinon.assert.calledWithMatch(Log.add, 'fizzmod', {
+				...commonLog,
+				entity: 'logs-enabled',
+				log: {
+					api: {
+						endpoint: 'logs-enabled',
+						httpMethod: 'get'
+					},
+					request: {
+						data: {
+							orderId: 'order-123',
+							shipping: [{
+								id: 'ship-1',
+								provider: 'fedex'
+							}]
+						}
+					},
+					response: {
+						code: 200,
+						body: {
+							message: 'ok',
+							items: [{
+								id: '123',
+								name: 'Product A'
+							}]
+						}
+					}
+				}
+			});
+		});
+
+		it('Should exclude two or more fields from the log when excludeFieldsLogRequestData has multiple patterns', async function() {
+
+			extraProcess = api => {
+				api.excludeFieldsLogRequestData = [
+					'shipping.*.secondFactor',
+					'shipping.*.addressCommerceId'
+				];
+				api.excludeFieldsLogResponseBody = [
+					'password',
+					'userData.*.email'
+				];
+			};
+
+			responseBody = {
+				message: 'ok',
+				password: 'secret123',
+				userData: [{
+					id: 'user1',
+					email: 'user@example.com',
+					name: 'John Doe'
+				}]
+			};
+
+			await test({
+				...defaultApi,
+				data: {
+					orderId: 'order-123',
+					shipping: [{
+						id: 'ship-1',
+						secondFactor: 'auth-token',
+						addressCommerceId: 'addr-123',
+						provider: 'fedex'
+					}]
+				}
+			}, 200);
+
+			sinon.assert.calledWithMatch(Log.add, 'fizzmod', {
+				...commonLog,
+				entity: 'logs-enabled',
+				log: {
+					api: {
+						endpoint: 'logs-enabled',
+						httpMethod: 'get'
+					},
+					request: {
+						data: {
+							orderId: 'order-123',
+							shipping: [{
+								id: 'ship-1',
+								provider: 'fedex'
+							}]
+						}
+					},
+					response: {
+						code: 200,
+						body: {
+							message: 'ok',
+							userData: [{
+								id: 'user1',
+								name: 'John Doe'
+							}]
+						}
+					}
+				}
+			});
+		});
+
+		it('Should exclude fields from nested arrays when pattern targets deep nested structure', async function() {
+
+			extraProcess = api => {
+				api.excludeFieldsLogRequestData = ['shipping.*.items.*.quantity'];
+				api.excludeFieldsLogResponseBody = ['orders.*.products.*.price'];
+			};
+
+			responseBody = {
+				message: 'ok',
+				orders: [{
+					id: 'order-1',
+					products: [{
+						id: 'prod-1',
+						price: 100.50,
+						name: 'Product A'
+					}]
+				}]
+			};
+
+			await test({
+				...defaultApi,
+				data: {
+					orderId: 'order-123',
+					shipping: [{
+						id: 'ship-1',
+						provider: 'fedex',
+						items: [{
+							id: 'item-1',
+							quantity: 5,
+							weight: '2kg'
+						}]
+					}]
+				}
+			}, 200);
+
+			sinon.assert.calledWithMatch(Log.add, 'fizzmod', {
+				...commonLog,
+				entity: 'logs-enabled',
+				log: {
+					api: {
+						endpoint: 'logs-enabled',
+						httpMethod: 'get'
+					},
+					request: {
+						data: {
+							orderId: 'order-123',
+							shipping: [{
+								id: 'ship-1',
+								provider: 'fedex',
+								items: [{
+									id: 'item-1',
+									weight: '2kg'
+								}]
+							}]
+						}
+					},
+					response: {
+						code: 200,
+						body: {
+							message: 'ok',
+							orders: [{
+								id: 'order-1',
+								products: [{
+									id: 'prod-1',
+									name: 'Product A'
+								}]
+							}]
+						}
+					}
+				}
+			});
+		});
+
+		it('Should exclude fields when using wildcard for unknown intermediate paths', async function() {
+
+			extraProcess = api => {
+				api.excludeFieldsLogRequestData = ['item.**.quantity'];
+				api.excludeFieldsLogResponseBody = ['result.**.secretData'];
+			};
+
+			responseBody = {
+				message: 'ok',
+				result: {
+					data: {
+						nested: {
+							secretData: 'hidden-value'
+						},
+						publicInfo: 'visible'
+					}
+				}
+			};
+
+			await test({
+				...defaultApi,
+				data: {
+					orderId: 'order-123',
+					item: {
+						details: {
+							specs: {
+								quantity: 10
+							},
+							name: 'Product A'
+						}
+					}
+				}
+			}, 200);
+
+			sinon.assert.calledWithMatch(Log.add, 'fizzmod', {
+				...commonLog,
+				entity: 'logs-enabled',
+				log: {
+					api: {
+						endpoint: 'logs-enabled',
+						httpMethod: 'get'
+					},
+					request: {
+						data: {
+							orderId: 'order-123',
+							item: {
+								details: {
+									specs: {},
+									name: 'Product A'
+								}
+							}
+						}
+					},
+					response: {
+						code: 200,
+						body: {
+							message: 'ok',
+							result: {
+								data: {
+									nested: {},
+									publicInfo: 'visible'
+								}
+							}
+						}
+					}
+				}
+			});
+		});
+
+		it('Should exclude fields when one pattern exists and another does not', async function() {
+
+			extraProcess = api => {
+				api.excludeFieldsLogRequestData = [
+					'shipping.*.secondFactor',
+					'shipping.*.deliveryWindows.initialDate'
+				];
+				api.excludeFieldsLogResponseBody = [
+					'password',
+					'nonExistentField.*.value'
+				];
+			};
+
+			responseBody = {
+				message: 'ok',
+				password: 'secret123',
+				otherData: 'visible'
+			};
+
+			await test({
+				...defaultApi,
+				data: {
+					orderId: 'order-123',
+					shipping: [{
+						id: 'ship-1',
+						secondFactor: 'auth-token',
+						provider: 'fedex'
+					}]
+				}
+			}, 200);
+
+			sinon.assert.calledWithMatch(Log.add, 'fizzmod', {
+				...commonLog,
+				entity: 'logs-enabled',
+				log: {
+					api: {
+						endpoint: 'logs-enabled',
+						httpMethod: 'get'
+					},
+					request: {
+						data: {
+							orderId: 'order-123',
+							shipping: [{
+								id: 'ship-1',
+								provider: 'fedex'
+							}]
+						}
+					},
+					response: {
+						code: 200,
+						body: {
+							message: 'ok',
+							otherData: 'visible'
+						}
+					}
+				}
+			});
+		});
+
+		it('Should exclude all fields when wildcard pattern is used', async function() {
+
+			extraProcess = api => {
+				api.excludeFieldsLogRequestData = ['*'];
+				api.excludeFieldsLogResponseBody = ['*'];
+			};
+
+			responseBody = {
+				message: 'ok',
+				data: { some: 'value' }
+			};
+
+			await test({
+				...defaultApi,
+				data: {
+					orderId: 'order-123',
+					customer: 'john@example.com'
+				}
+			}, 200);
+
+			sinon.assert.calledWithMatch(Log.add, 'fizzmod', {
+				...commonLog,
+				entity: 'logs-enabled',
+				log: {
+					api: {
+						endpoint: 'logs-enabled',
+						httpMethod: 'get'
+					},
+					request: {
+						data: {}
+					},
+					response: {
+						code: 200,
+						body: {}
+					}
+				}
+			});
+		});
+
+		context('When fields from excludeFields arrays should not be excluded from the log', () => {
+
+			it('Should not exclude fields when excludeFields patterns do not match existing fields', async function() {
+
+				extraProcess = api => {
+					api.excludeFieldsLogRequestData = [
+						'',
+						'*.shipping.*.deliveryWindows.initialDate',
+						'.secondFactor.value',
+						'location.address.'
+					];
+					api.excludeFieldsLogResponseBody = [
+						'*.nonExistent.*.field',
+						'invalidPattern'
+					];
+				};
+
+				responseBody = {
+					message: 'ok',
+					data: { some: 'value' }
+				};
+
+				await test({
+					...defaultApi,
+					data: {
+						orderId: 'order-123',
+						shipping: [{
+							id: 'ship-1',
+							secondFactor: 'auth-token',
+							provider: 'fedex'
+						}]
+					}
+				}, 200);
+
+				sinon.assert.calledWithMatch(Log.add, 'fizzmod', {
+					...commonLog,
+					entity: 'logs-enabled',
+					log: {
+						api: {
+							endpoint: 'logs-enabled',
+							httpMethod: 'get'
+						},
+						request: {
+							data: {
+								orderId: 'order-123',
+								shipping: [{
+									id: 'ship-1',
+									secondFactor: 'auth-token',
+									provider: 'fedex'
+								}]
+							}
+						},
+						response: {
+							code: 200,
+							body: {
+								message: 'ok',
+								data: { some: 'value' }
+							}
+						}
+					}
+				});
+			});
+
+			it('Should not exclude fields when excludeFields arrays are empty', async function() {
+
+				extraProcess = api => {
+					api.excludeFieldsLogRequestData = [];
+					api.excludeFieldsLogResponseBody = [];
+				};
+
+				responseBody = {
+					message: 'ok',
+					password: 'secret123'
+				};
+
+				await test({
+					...defaultApi,
+					data: {
+						orderId: 'order-123',
+						password: 'user-secret'
+					}
+				}, 200);
+
+				sinon.assert.calledWithMatch(Log.add, 'fizzmod', {
+					...commonLog,
+					entity: 'logs-enabled',
+					log: {
+						api: {
+							endpoint: 'logs-enabled',
+							httpMethod: 'get'
+						},
+						request: {
+							data: {
+								orderId: 'order-123',
+								password: 'user-secret'
+							}
+						},
+						response: {
+							code: 200,
+							body: {
+								message: 'ok',
+								password: 'secret123'
+							}
+						}
+					}
+				});
+			});
+		});
+
+		it('Should not log the api request with get method when api.shouldCreateLog is not set', async function() {
 			await test({
 				...defaultApi,
 				endpoint: 'api/valid-endpoint'
@@ -789,7 +1262,7 @@ describe('Dispatcher', () => {
 			sinon.assert.notCalled(Log.add);
 		});
 
-		it('should not log the api request when api.shouldCreateLog is false', async function() {
+		it('Should not log the api request when api.shouldCreateLog is false', async function() {
 
 			await test({
 				...defaultApi,
