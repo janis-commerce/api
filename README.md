@@ -61,7 +61,7 @@ Returns the fields to exclude from the api request data passing simple fields or
 Returns the fields to exclude from the api response data passing simple fields or specific paths to such fields.
 
 ℹ️ **Note**:  
-- The wildcard `*` in the field path of the `excludeFieldsLogRequestData` or `excludeFieldsLogResponseBody` static getter, is used to access properties inside arrays or when the root field path is unknown.
+- The wildcard `*` in the field path of the `excludeFieldsLogRequestData` or `excludeFieldsLogResponseBody` static getter, is used to access properties inside arrays of one level or nested arrays.
 - The wildcard `**` in the field path of the `excludeFieldsLogRequestData` or `excludeFieldsLogResponseBody` static getter, can be used when the intermediate field path is unknown between the root and the field to exclude.
 - The `excludeFieldsLogRequestData` or `excludeFieldsLogResponseBody` static getter can have both field names and field paths.
 

@@ -779,7 +779,7 @@ describe('Dispatcher', () => {
 			});
 		});
 
-		it('Should exclude one field from the log when excludeFieldsLogRequestData has array pattern', async function() {
+		it('Should exclude one field from the log when excludeFieldsLogRequestData and excludeFieldsLogResponseBody have array patterns', async function() {
 
 			extraProcess = api => {
 				api.excludeFieldsLogRequestData = ['shipping.*.secondFactor'];
@@ -838,7 +838,8 @@ describe('Dispatcher', () => {
 			});
 		});
 
-		it('Should exclude two or more fields from the log when excludeFieldsLogRequestData has multiple patterns', async function() {
+		// eslint-disable-next-line max-len
+		it('Should exclude two or more fields from the log when excludeFieldsLogRequestData and excludeFieldsLogResponseBody have multiple patterns', async function() {
 
 			extraProcess = api => {
 				api.excludeFieldsLogRequestData = [
