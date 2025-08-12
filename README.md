@@ -55,10 +55,19 @@ Determines if the api response data should be logged or not.
 Determines if the api response body should be logged or not.
 
 - **excludeFieldsLogRequestData**. *string array*.
-Returns the fields to exclude from the api request data.
+Returns the fields to exclude from the api request data passing simple fields or specific paths to such fields.
 
 - **excludeFieldsLogResponseBody**. *string array*.
-Returns the fields to exclude from the api response body. The fields will be omitted recursively.
+Returns the fields to exclude from the api response data passing simple fields or specific paths to such fields.
+
+ℹ️ **Note**:  
+- The wildcard `*` in the field path of the `excludeFieldsLogRequestData` or `excludeFieldsLogResponseBody` static getter, is used to access properties inside arrays of one level or nested arrays.
+- The wildcard `**` in the field path of the `excludeFieldsLogRequestData` or `excludeFieldsLogResponseBody` static getter, can be used when the intermediate field path is unknown between the root and the field to exclude.
+- The `excludeFieldsLogRequestData` or `excludeFieldsLogResponseBody` static getter can have both field names and field paths.
+
+⚠️ **Warning**:  
+- When using the wildcard `*` alone in the field path of the `excludeFieldsLogRequestData` or `excludeFieldsLogResponseBody` static getter, it will exclude all the fields in the log.
+- In case the field path is incorrect, it will not exclude any field.
 
 ### Setters
 
