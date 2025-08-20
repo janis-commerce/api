@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [8.1.0] - 2024-08-20
+### Changed
+- Reimplemented omitRecursive function to support pattern-based field exclusion instead of simple field name matching
+- Enhanced `excludeFieldsLogRequestData` and `excludeFieldsLogResponseBody` to accept path patterns with wildcards
+
 ## [8.0.3] - 2024-06-07
 ### Changed
 - From now on **Log** is related to the entity and `entityId` read from the endpoint or response `body.id`
