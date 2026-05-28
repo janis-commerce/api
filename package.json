@@ -43,5 +43,8 @@
     "@janiscommerce/log": "^5.0.6",
     "@janiscommerce/superstruct": "^1.2.1",
     "lodash.clonedeep": "^4.5.0"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
