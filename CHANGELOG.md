@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Request header keys are now normalized to lowercase, so headers sent in camelCase over HTTP/1 (e.g. `x-janis-Page`) are read consistently by every API instead of falling back to defaults (JV2-158)
 
 ## [8.1.0] - 2024-08-20
 ### Changed
