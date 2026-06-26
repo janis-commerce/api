@@ -17,7 +17,10 @@ npm install @janiscommerce/api
 
 This is the class you should extend to code your own APIs. You can customize them with the following methods and getters:
 
-### get struct()
+### get dataSchema()
+This optional getter should return a validation schema using [fastest-validator](https://www.npmjs.com/package/fastest-validator). If the data doesn't match the schema, a 400 http code is returned. This is the recommended way to validate request data.
+
+### get struct() (Deprecated)
 This optional getter should return a valid [struct](https://www.npmjs.com/package/superstruct). If it doesn't match the data, default http code is set to 400.
 
 **IMPORTANT** In case you return an array, each element will be passed as an argument to struct validation (see examples below). To validate an array, use `struct.list()` instead.
@@ -40,6 +43,12 @@ Returns the the headers of the request as a key-value object.
 
 - **cookies**. *object*.
 Returns the the cookies of the request as a key-value object.
+
+- **rawData**. *string*.
+Returns the raw unparsed request data as a string. Useful when you need access to the original request payload.
+
+- **rawPathParameters**. *object*.
+Returns the path parameters as a key-value object where the keys are the parameter names from the endpoint pattern. For example: /store/{storeId}/schedules will generate { storeId: '10' } for the path /store/10/schedules.
 
 - **shouldCreateLog**. *boolean*.
 Determines if the api execution should be logged or not.
@@ -167,7 +176,41 @@ class MyApi extends API {
 module.exports = MyApi;
 ```
 
-### API with struct and custom validation
+### API with dataSchema and custom validation (Recommended)
+
+```js
+'use strict';
+
+const { API } = require('@janiscommerce/api');
+
+class MyApi extends API {
+
+	get dataSchema() {
+		return {
+			foo: { type: 'string', pattern: '^(bar)+$' },
+			age: { type: 'number', positive: true, integer: true },
+			email: { type: 'email', optional: true },
+			status: { type: 'enum', values: ['active', 'inactive'] }
+		};
+	}
+
+	async validate() {
+		if(this.data.email && !this.data.age)
+			throw new Error('Age is required if email is set');
+	}
+
+	async process() {
+		this.setBody({
+			message: 'Success'
+		});
+	}
+
+}
+
+module.exports = MyApi;
+```
+
+### API with struct and custom validation (Deprecated)
 
 ```js
 'use strict';
