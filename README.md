@@ -36,7 +36,7 @@ The following methods will be inherited from the base API Class:
 Returns the path parameters of the request. For example: /store/10/schedules will generate the following path parameters: ['10']
 
 - **headers**. *object*.
-Returns the the headers of the request as a key-value object.
+Returns the the headers of the request as a key-value object. Header keys are normalized to lowercase (HTTP header names are case-insensitive per RFC 7230), so you can always read them in lowercase regardless of the casing sent by the client (e.g. `this.headers['x-janis-page']`).
 
 - **cookies**. *object*.
 Returns the the cookies of the request as a key-value object.

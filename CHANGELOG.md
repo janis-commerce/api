@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [8.1.1] - 2026-06-29
+### Fixed
+- Request header keys are now normalized to lowercase, so headers sent in camelCase over HTTP/1 (e.g. `x-janis-Page`) are read consistently by every API instead of falling back to defaults
+
 ## [8.1.0] - 2024-08-20
 ### Changed
 - Reimplemented omitRecursive function to support pattern-based field exclusion instead of simple field name matching

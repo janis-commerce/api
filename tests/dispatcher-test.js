@@ -543,6 +543,26 @@ describe('Dispatcher', () => {
 			}, 200);
 		});
 
+		it('Should normalize header keys to lowercase regardless of the casing received', async function() {
+
+			extraProcess = api => {
+				assert.deepStrictEqual(api.headers, {
+					'x-janis-page': '3',
+					'x-janis-page-size': '20',
+					'my-header': 'foo'
+				});
+			};
+
+			await test({
+				endpoint: 'api/valid-endpoint',
+				headers: {
+					'x-janis-Page': '3',
+					'X-Janis-Page-Size': '20',
+					'My-Header': 'foo'
+				}
+			}, 200);
+		});
+
 		it('Should response with a custom HTTP Code when given', async function() {
 
 			httpCode = 201;
