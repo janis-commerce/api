@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- `shouldLogAsCore` getter to force an API request log to be saved as a core log (`Log.addCore`) even when the session has a `clientCode`
+
+### Changed
+- Request logs are now saved as core logs when there is no `clientCode` — or no session at all — instead of being discarded (logging no longer requires a session). ⚠️ Client-less non-GET endpoints that were previously not logged will start emitting logs (including request data, headers and response body) — review `shouldCreateLog` / `excludeFieldsLogRequestData` / `shouldLogResponseBody` or the `JANIS_TRACE_PRIVATE_FIELDS` env var to avoid logging secrets before upgrading
 
 ## [8.1.1] - 2026-06-29
 ### Fixed

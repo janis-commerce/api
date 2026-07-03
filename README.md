@@ -13,6 +13,12 @@ A package for managing API from any origin.
 npm install @janiscommerce/api
 ```
 
+## ⚠️ Automatic logs & sensitive data
+
+Since `8.2.0`, **API requests are logged even when there is no `clientCode` — or no session at all** (they are stored as _core logs_), instead of being discarded as before. Client-less non-`GET` endpoints (e.g. login, OAuth token, password recovery, internal/admin APIs) that were previously **not** logged now start emitting logs, which by default include the **request data, request headers and response body** — so they may start logging secrets, tokens or passwords into the trace service.
+
+**Before upgrading, review your client-less non-`GET` endpoints** and protect them (`shouldCreateLog = false`, `excludeFieldsLogRequestData` / `shouldLogResponseBody = false`, or the `JANIS_TRACE_PRIVATE_FIELDS` env var). See the [Logging](#logging) section for the full details.
+
 ## API
 
 This is the class you should extend to code your own APIs. You can customize them with the following methods and getters:
@@ -40,34 +46,6 @@ Returns the the headers of the request as a key-value object. Header keys are no
 
 - **cookies**. *object*.
 Returns the the cookies of the request as a key-value object.
-
-- **shouldCreateLog**. *boolean*.
-Determines if the api execution should be logged or not.
-When the HTTP Method is **GET** the *default* is `false` and `true` otherwise.
-
-- **shouldLogRequestData**. *boolean*.
-Determines if the api request data should be logged or not.
-
-- **shouldLogRequestHeaders**. *boolean*.
-Determines if the api response data should be logged or not.
-
-- **shouldLogResponseBody**. *boolean*.
-Determines if the api response body should be logged or not.
-
-- **excludeFieldsLogRequestData**. *string array*.
-Returns the fields to exclude from the api request data passing simple fields or specific paths to such fields.
-
-- **excludeFieldsLogResponseBody**. *string array*.
-Returns the fields to exclude from the api response data passing simple fields or specific paths to such fields.
-
-ℹ️ **Note**:  
-- The wildcard `*` in the field path of the `excludeFieldsLogRequestData` or `excludeFieldsLogResponseBody` static getter, is used to access properties inside arrays of one level or nested arrays.
-- The wildcard `**` in the field path of the `excludeFieldsLogRequestData` or `excludeFieldsLogResponseBody` static getter, can be used when the intermediate field path is unknown between the root and the field to exclude.
-- The `excludeFieldsLogRequestData` or `excludeFieldsLogResponseBody` static getter can have both field names and field paths.
-
-⚠️ **Warning**:  
-- When using the wildcard `*` alone in the field path of the `excludeFieldsLogRequestData` or `excludeFieldsLogResponseBody` static getter, it will exclude all the fields in the log.
-- In case the field path is incorrect, it will not exclude any field.
 
 ### Setters
 
@@ -113,6 +91,51 @@ This will dispatch the API. It resolves to an object with the API execution resu
 * headers {object} A key-value object containing the response headers
 * cookies {object} A key-value object containing the response cookies
 
+
+## Logging
+
+APIs are automatically logged to the trace service using [`@janiscommerce/log`](https://www.npmjs.com/package/@janiscommerce/log). Every non-`GET` request is logged by default (`GET` requests are not). Each log is stored either as a **client log** (tied to the request's `clientCode`) or, when there is no `clientCode` — or no session at all — as a **core log** (a log not tied to any client).
+
+> **⚠️ Sensitive data**
+> Logs include the request data, request headers and response body by default. Since client-less requests are now logged (as core logs) instead of being discarded, review your client-less non-`GET` endpoints so they don't log secrets, tokens or passwords. Use the `excludeFieldsLog*` getters below and/or the `JANIS_TRACE_PRIVATE_FIELDS` env var.
+
+The automatic logs can be customized with the following getters:
+
+- **shouldCreateLog**. *boolean*.
+Determines if the api execution should be logged or not.
+When the HTTP Method is **GET** the *default* is `false` and `true` otherwise.
+
+- **shouldLogRequestData**. *boolean*.
+Determines if the api request data should be logged or not.
+
+- **shouldLogRequestHeaders**. *boolean*.
+Determines if the api request headers should be logged or not.
+
+- **shouldLogResponseBody**. *boolean*.
+Determines if the api response body should be logged or not.
+
+- **shouldLogAsCore**. *boolean*.
+Determines if the api request log should be saved as a **core log** (a log not tied to any client) instead of a client log. *Default* is `false`.
+Independently of this getter, a request log is also saved as a core log when there is no `clientCode` (or no session at all), instead of being discarded as before.
+
+- **excludeFieldsLogRequestData**. *string array*.
+Returns the fields to exclude from the api request data passing simple fields or specific paths to such fields.
+
+- **excludeFieldsLogResponseBody**. *string array*.
+Returns the fields to exclude from the api response data passing simple fields or specific paths to such fields.
+
+ℹ️ **Note**:
+- The wildcard `*` in the field path of the `excludeFieldsLogRequestData` or `excludeFieldsLogResponseBody` static getter, is used to access properties inside arrays of one level or nested arrays.
+- The wildcard `**` in the field path of the `excludeFieldsLogRequestData` or `excludeFieldsLogResponseBody` static getter, can be used when the intermediate field path is unknown between the root and the field to exclude.
+- The `excludeFieldsLogRequestData` or `excludeFieldsLogResponseBody` static getter can have both field names and field paths.
+
+⚠️ **Warning**:
+- When using the wildcard `*` alone in the field path of the `excludeFieldsLogRequestData` or `excludeFieldsLogResponseBody` static getter, it will exclude all the fields in the log.
+- In case the field path is incorrect, it will not exclude any field.
+
+### Masking sensitive fields globally: `JANIS_TRACE_PRIVATE_FIELDS`
+
+The per-API `excludeFieldsLog*` getters above **remove** the listed fields from a specific API's log. As a service-wide alternative, [`@janiscommerce/log`](https://www.npmjs.com/package/@janiscommerce/log#env-variables) reads the `JANIS_TRACE_PRIVATE_FIELDS` env var and **recursively masks** the listed fields with `***` in **every** log the service emits (comma-separated, e.g. `JANIS_TRACE_PRIVATE_FIELDS=password,token`). Use it as a service-wide safety net for sensitive fields.
 
 ## APIError
 
