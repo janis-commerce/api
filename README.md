@@ -13,6 +13,17 @@ A package for managing API from any origin.
 npm install @janiscommerce/api
 ```
 
+## ⚠️ Automatic logs & sensitive data
+
+Since this version, **request logs are saved even when the session has no `clientCode`** (they are stored as _core logs_), instead of being discarded as before. This means client-less non-GET endpoints (e.g. login, OAuth token, password recovery, internal/admin APIs) that were previously **not** logged now start emitting logs.
+
+By default these logs include the **request data, request headers and response body**, so a client-less endpoint may start logging secrets, tokens or passwords into the trace service. **Before upgrading, review your client-less non-GET endpoints** and, for each one, either:
+
+- set `shouldCreateLog = false` if it must not be logged at all, or
+- exclude the sensitive fields with `excludeFieldsLogRequestData` / `excludeFieldsLogResponseBody` and/or set `shouldLogResponseBody = false`.
+
+See the logging getters in the [Getters](#getters) section below.
+
 ## API
 
 This is the class you should extend to code your own APIs. You can customize them with the following methods and getters:
@@ -53,6 +64,10 @@ Determines if the api response data should be logged or not.
 
 - **shouldLogResponseBody**. *boolean*.
 Determines if the api response body should be logged or not.
+
+- **shouldLogAsCore**. *boolean*.
+Determines if the api request log should be saved as a **core log** (a log not tied to any client) instead of a client log. *Default* is `false`.
+Independently of this getter, a request log is also saved as a core log when the session has no `clientCode` (instead of being discarded as before).
 
 - **excludeFieldsLogRequestData**. *string array*.
 Returns the fields to exclude from the api request data passing simple fields or specific paths to such fields.

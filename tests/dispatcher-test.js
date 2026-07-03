@@ -171,6 +171,12 @@ describe('Dispatcher', () => {
 		}
 	}
 
+	class LogsAsCore extends LogsMinimal {
+		get shouldLogAsCore() {
+			return true;
+		}
+	}
+
 	const mock = (endpoint, classContent) => {
 		mockRequire(path.join(Fetcher.apiPath, endpoint), classContent);
 	};
@@ -198,7 +204,10 @@ describe('Dispatcher', () => {
 		mock('logs-disabled/get', LogsDisabled);
 		mock('logs-minimal/list', LogsMinimal);
 		mock('logs-minimal/get', LogsMinimal);
+		mock('logs-as-core/list', LogsAsCore);
+		mock('logs-as-core/get', LogsAsCore);
 		sinon.stub(Log, 'add').resolves();
+		sinon.stub(Log, 'addCore').resolves();
 	});
 
 	afterEach(() => {
@@ -1290,6 +1299,72 @@ describe('Dispatcher', () => {
 				endpoint: 'api/logs-disabled'
 			}, 200);
 			sinon.assert.notCalled(Log.add);
+		});
+
+		context('core logs', () => {
+
+			it('Should log the api request as a core log when shouldLogAsCore getter returns true, even having a clientCode', async function() {
+
+				await test({
+					...defaultApi,
+					endpoint: 'api/logs-as-core'
+				}, 200);
+
+				sinon.assert.calledWithMatch(Log.addCore, {
+					...commonLog,
+					entity: 'logs-as-core',
+					log: {
+						api: {
+							endpoint: 'logs-as-core',
+							httpMethod: 'get'
+						},
+						request: {},
+						response: {
+							code: 200
+						}
+					}
+				});
+				sinon.assert.notCalled(Log.add);
+			});
+
+			it('Should log the api request as a core log when the session has no clientCode', async function() {
+
+				await test({
+					...defaultApi,
+					authenticationData: {},
+					endpoint: 'api/logs-minimal'
+				}, 200);
+
+				sinon.assert.calledWithMatch(Log.addCore, {
+					...commonLog,
+					entity: 'logs-minimal',
+					log: {
+						api: {
+							endpoint: 'logs-minimal',
+							httpMethod: 'get'
+						},
+						request: {},
+						response: {
+							code: 200
+						}
+					}
+				});
+				sinon.assert.notCalled(Log.add);
+			});
+
+			it('Should log the api request to the client when shouldLogAsCore getter returns false (default) and session has a clientCode', async function() {
+
+				await test({
+					...defaultApi,
+					endpoint: 'api/logs-minimal'
+				}, 200);
+
+				sinon.assert.calledWithMatch(Log.add, 'fizzmod', {
+					...commonLog,
+					entity: 'logs-minimal'
+				});
+				sinon.assert.notCalled(Log.addCore);
+			});
 		});
 	});
 });
