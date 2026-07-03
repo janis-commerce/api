@@ -69,6 +69,29 @@ Set response cookies. `cookies` must be an object with "key-value" cookies.
 * **setBody(body)**.
 Set the response body.
 
+## Dispatcher
+
+This is the class you should use to dispatch your APIs. It takes the request data as constructor arguments and then finds you API file based on the endpoint and executes it.
+
+### constructor(request)
+The request must be an object and can be setup using the following properties:
+
+* endpoint {string} **required** The API endpoint called
+* method {string} The HTTP Method used in the request. Default: `'get'`.
+* data {mixed} The data received in the API (query string or request body). Default: `{}`.
+* headers {object} A key-value object containing the request headers. Default: `{}`.
+* cookies {object} A key-value object containing the request cookies. Default: `{}`.
+* authenticationData {object} An object containing the request authentication data (see [Session injection](#session-injection)). Default: `{}`.
+
+### async dispatch()
+This will dispatch the API. It resolves to an object with the API execution result, with the following properties:
+
+* code {number} The return http code. Default: `200`.
+* body {mixed} The response body
+* headers {object} A key-value object containing the response headers
+* cookies {object} A key-value object containing the response cookies
+
+
 ## Logging
 
 APIs are automatically logged to the trace service using [`@janiscommerce/log`](https://www.npmjs.com/package/@janiscommerce/log). Every non-`GET` request is logged by default (`GET` requests are not). Each log is stored either as a **client log** (tied to the request's `clientCode`) or, when there is no `clientCode` — or no session at all — as a **core log** (a log not tied to any client).
@@ -113,29 +136,6 @@ Returns the fields to exclude from the api response data passing simple fields o
 ### Masking sensitive fields globally: `JANIS_TRACE_PRIVATE_FIELDS`
 
 The per-API `excludeFieldsLog*` getters above **remove** the listed fields from a specific API's log. As a service-wide alternative, [`@janiscommerce/log`](https://www.npmjs.com/package/@janiscommerce/log#env-variables) reads the `JANIS_TRACE_PRIVATE_FIELDS` env var and **recursively masks** the listed fields with `***` in **every** log the service emits (comma-separated, e.g. `JANIS_TRACE_PRIVATE_FIELDS=password,token`). Use it as a service-wide safety net for sensitive fields.
-
-## Dispatcher
-
-This is the class you should use to dispatch your APIs. It takes the request data as constructor arguments and then finds you API file based on the endpoint and executes it.
-
-### constructor(request)
-The request must be an object and can be setup using the following properties:
-
-* endpoint {string} **required** The API endpoint called
-* method {string} The HTTP Method used in the request. Default: `'get'`.
-* data {mixed} The data received in the API (query string or request body). Default: `{}`.
-* headers {object} A key-value object containing the request headers. Default: `{}`.
-* cookies {object} A key-value object containing the request cookies. Default: `{}`.
-* authenticationData {object} An object containing the request authentication data (see [Session injection](#session-injection)). Default: `{}`.
-
-### async dispatch()
-This will dispatch the API. It resolves to an object with the API execution result, with the following properties:
-
-* code {number} The return http code. Default: `200`.
-* body {mixed} The response body
-* headers {object} A key-value object containing the response headers
-* cookies {object} A key-value object containing the response cookies
-
 
 ## APIError
 
