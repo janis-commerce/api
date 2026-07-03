@@ -1365,6 +1365,46 @@ describe('Dispatcher', () => {
 				});
 				sinon.assert.notCalled(Log.addCore);
 			});
+
+			it('Should log the api request as a core log when there is no session at all', async function() {
+
+				sinon.stub(Dispatcher.prototype, 'setSession'); // simulates a request that never got a session assigned
+
+				await test({
+					...defaultApi,
+					endpoint: 'api/logs-minimal'
+				}, 200);
+
+				sinon.assert.calledWithMatch(Log.addCore, {
+					...commonLog,
+					entity: 'logs-minimal',
+					log: {
+						api: {
+							endpoint: 'logs-minimal',
+							httpMethod: 'get'
+						},
+						request: {},
+						response: {
+							code: 200
+						}
+					}
+				});
+				sinon.assert.notCalled(Log.add);
+			});
+
+			it('Should not crash the logging step, nor call Log.add/Log.addCore, when prepare() fails before an endpoint is set', async function() {
+
+				await assert.rejects(() => test({
+					endpoint: 'api/no-process-method'
+				}), {
+					body: {
+						message: 'API \'NoProcessMethod\' Method \'process\' not found'
+					}
+				});
+
+				sinon.assert.notCalled(Log.add);
+				sinon.assert.notCalled(Log.addCore);
+			});
 		});
 	});
 });
